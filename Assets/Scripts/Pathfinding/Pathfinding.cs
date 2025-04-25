@@ -81,6 +81,7 @@ public class Pathfinding : MonoBehaviour
         if (pathWasFound)
         {
             waypoints = RetracePath(startNode, targetNode);
+            pathWasFound = waypoints.Length > 0;
         }
 
         requestManager.FinishedProcessingPath(waypoints, pathWasFound);

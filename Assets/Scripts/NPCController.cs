@@ -23,17 +23,13 @@ public class NPCController : MovementController
         if (wasSuccess)
         {
             this.path = path;
-
-            if (path.Length > 1)
-            {
-                StartCoroutine(FollowPath());
-            }
+            StartCoroutine(FollowPath());
         }
     }
 
     IEnumerator FollowPath()
     {
-        for (int i = 0; i < path.Length - 1; i++)
+        for (int i = 0; i < path.Length; i++)
         {
             startPosition = transform.position;
             targetPosition = path[i];
@@ -70,26 +66,6 @@ public class NPCController : MovementController
 
             transform.position = targetPosition;
             lastDirection = direction;
-        }
-
-        Vector3 checkDirection = path[path.Length - 1] - transform.position;
-        Vector3Int lookDirection = new Vector3Int(Mathf.RoundToInt(checkDirection.x), Mathf.RoundToInt(checkDirection.y), 0);
-        string look = GetDirection(lookDirection);
-
-        if (lookDirection != lastDirection)
-        {
-            bool clockwise = Mathf.Sign(lastDirection.x * lookDirection.y - lastDirection.y * lookDirection.x) <= 0;
-            int nrOfTurns = Mathf.RoundToInt(Vector3.Angle(lookDirection, lastDirection) / 45f);
-
-            string[] turns = GetTurns(GetDirection(lastDirection), nrOfTurns, clockwise);
-
-            for (int j = 0; j < nrOfTurns; j++)
-            {
-                animator.PlayTurnAnimation(turns[j]);
-                yield return new WaitForSeconds(timeToTurn);
-            }
-
-            lastDirection = lookDirection;
         }
 
         animator.PlayIdleAnimation(GetDirection(lastDirection));
