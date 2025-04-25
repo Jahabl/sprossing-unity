@@ -83,7 +83,7 @@ public class PlayerController : MovementController
 
             Node checkNode = nodeGrid.GetNodeFromWorldPosition(targetPosition);
 
-            if (checkNode == null || !checkNode.isWalkable)
+            if (checkNode == null || !checkNode.isWalkable[0])
             {
                 isMoving = false;
                 yield break;
@@ -94,12 +94,12 @@ public class PlayerController : MovementController
                 Vector3 checkPosition = grid.CellToWorld(gridPosition + new Vector3Int(direction.x, 0, 0));
                 checkNode = nodeGrid.GetNodeFromWorldPosition(checkPosition);
 
-                if (checkNode != null && checkNode.isWalkable)
+                if (checkNode != null && checkNode.isWalkable[0])
                 {
                     checkPosition = grid.CellToWorld(gridPosition + new Vector3Int(0, direction.y, 0));
                     checkNode = nodeGrid.GetNodeFromWorldPosition(checkPosition);
 
-                    if (checkNode == null || !checkNode.isWalkable)
+                    if (checkNode == null || !checkNode.isWalkable[0])
                     {
                         isMoving = false;
                         yield break;

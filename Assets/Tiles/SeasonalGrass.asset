@@ -276,7 +276,7 @@ MonoBehaviour:
     - {x: -1, y: 1, z: 0}
     m_RuleTransform: 0
   tileType: 0
-  season: 1
+  season: 0
   alwaysConnect: 1
   tilesToConnect:
   - {fileID: 11400000, guid: 36a25c31534174598ad5b4f9fc4c72db, type: 2}

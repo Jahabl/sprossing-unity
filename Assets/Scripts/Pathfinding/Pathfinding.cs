@@ -28,7 +28,7 @@ public class Pathfinding : MonoBehaviour
         Node startNode = nodes.GetNodeFromWorldPosition(startPosition);
         Node targetNode = nodes.GetNodeFromWorldPosition(targetPosition);
 
-        if (startPosition == targetPosition || startNode == null || targetNode == null || !targetNode.isWalkable)
+        if (startPosition == targetPosition || startNode == null || targetNode == null || !targetNode.isWalkable[0])
         {
             requestManager.FinishedProcessingPath(waypoints, pathWasFound);
             yield break;
@@ -52,7 +52,7 @@ public class Pathfinding : MonoBehaviour
 
             foreach (Node neighbor in nodes.GetNeighbors(currentNode))
             {
-                if (!neighbor.isWalkable || closedSet.Contains(neighbor))
+                if (!neighbor.isWalkable[0] || closedSet.Contains(neighbor))
                 {
                     continue;
                 }

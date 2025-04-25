@@ -52,13 +52,17 @@ public class NodeGrid : MonoBehaviour
         {
             for (int y = 0; y < gridSize.y; y++)
             {
-                for (int i = 0; i < tilemaps.Length; i++) //bottom up
+                for (int i = 0; i < tilemaps.Length; i += 2) //bottom to top, skip overlays
                 {
                     SeasonalRuleTile tile = tilemaps[i].GetTile<SeasonalRuleTile>(new Vector3Int(x - gridSize.x / 2, y - gridSize.y / 2, 0));
                     if (tile != null)
                     {
-                        nodes[x,y] = new Node(tile.tileType == TileType.Grass, bottomLeft + new Vector3(x * grid.cellSize.x, y * grid.cellSize.y, 0), x, y);
-                        break;
+                        if (nodes[x,y] == null)
+                        {
+                            nodes[x,y] = new Node(bottomLeft + new Vector3(x * grid.cellSize.x, y * grid.cellSize.y, 0), x, y);
+                        }
+
+                        nodes[x,y].isWalkable[i / 2] = tile.tileType == TileType.Grass || tile.tileType == TileType.Path;
                     }
                 }
             }
@@ -96,7 +100,7 @@ public class NodeGrid : MonoBehaviour
                     {
                         if ((x + y)%2 == 0) //is diagonal
                         {
-                            if (!nodes[checkX, centerNode.gridY].isWalkable || !nodes[centerNode.gridX, checkY].isWalkable)
+                            if (!nodes[checkX, centerNode.gridY].isWalkable[0] || !nodes[centerNode.gridX, checkY].isWalkable[0])
                             {
                                 continue;
                             }

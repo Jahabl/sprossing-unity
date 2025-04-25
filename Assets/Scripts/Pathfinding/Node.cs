@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Node : IHeapItem<Node>
 {
-    public bool isWalkable;
+    public bool[] isWalkable;
     public Vector3 worldPosition;
     public int gridX, gridY;
     public Node parent;
@@ -19,9 +19,10 @@ public class Node : IHeapItem<Node>
         }
     }
 
-    public Node(bool isWalkable, Vector3 worldPosition, int gridX, int gridY)
+    public Node(Vector3 worldPosition, int gridX, int gridY)
     {
-        this.isWalkable = isWalkable;
+        isWalkable = new bool[3];
+
         this.worldPosition = worldPosition;
         this.gridX = gridX;
         this.gridY = gridY;
