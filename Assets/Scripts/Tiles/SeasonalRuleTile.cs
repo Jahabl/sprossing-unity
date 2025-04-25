@@ -64,7 +64,7 @@ public class SeasonalRuleTile : RuleTile<SeasonalRuleTile.Neighbor>
 
     private bool Check_NotSpecific(TileBase tile)
     {
-        return tile == null || tile == this;
+        return !tilesToConnect.Contains(tile) && tile != this;
     }
 
     private bool Check_Nothing(TileBase tile)

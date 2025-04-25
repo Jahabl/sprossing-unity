@@ -6,9 +6,7 @@ public class WorldManager : MonoBehaviour
 {
     [SerializeField] private MovementController player;
 
-    [SerializeField] private SeasonalRuleTile grassTiles;
-    [SerializeField] private SeasonalRuleTile cliffTiles;
-    [SerializeField] private SeasonalRuleTile waterTiles;
+    [SerializeField] private SeasonalRuleTile[] allTiles;
 
     private Tilemap[] tilemaps;
 
@@ -26,24 +24,28 @@ public class WorldManager : MonoBehaviour
     {
         if (Input.GetKeyUp(KeyCode.N))
         {
-            switch (grassTiles.season)
+            Seasons newSeason = allTiles[0].season;
+
+            switch (newSeason)
             {
                 case Seasons.Spring:
-                    grassTiles.season = Seasons.Summer;
+                    newSeason = Seasons.Summer;
                     break;
                 case Seasons.Summer:
-                    grassTiles.season = Seasons.Autumn;
+                    newSeason = Seasons.Autumn;
                     break;
                 case Seasons.Autumn:
-                    grassTiles.season = Seasons.Winter;
+                    newSeason = Seasons.Winter;
                     break;
                 case Seasons.Winter:
-                    grassTiles.season = Seasons.Spring;
+                    newSeason = Seasons.Spring;
                     break;
             }
 
-            cliffTiles.season = grassTiles.season;
-            waterTiles.season = grassTiles.season;
+            foreach (SeasonalRuleTile tile in allTiles)
+            {
+                tile.season = newSeason;
+            }
 
             foreach (Tilemap map in tilemaps)
             {
@@ -153,18 +155,7 @@ public class WorldManager : MonoBehaviour
 
             for (int j = 0; j < savedTiles.Count; j++)
             {
-                switch (savedTiles[j].tileType)
-                {
-                    case TileType.Water:
-                        tilemaps[i].SetTile(savedTiles[j].position, waterTiles);
-                        break;
-                    case TileType.Cliff:
-                        tilemaps[i].SetTile(savedTiles[j].position, cliffTiles);
-                        break;
-                    default:
-                        tilemaps[i].SetTile(savedTiles[j].position, grassTiles);
-                        break;
-                }
+                tilemaps[i].SetTile(savedTiles[j].position, allTiles[(int) savedTiles[j].tileType]);
             }
         }
     }
