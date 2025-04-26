@@ -14,117 +14,107 @@ public class PlayerController : MovementController
 
     private void Update()
     {
-        if (Input.GetMouseButtonUp(0))
-        {
-            isButtonDown = false;
-        }
-
-        if (isMoving)
-            return;
-
         float moveX = Input.GetAxis("Horizontal");
         float moveY = Input.GetAxis("Vertical");
 
         input.x = Mathf.RoundToInt(moveX);
         input.y = Mathf.RoundToInt(moveY);
 
-        if ((input.x != 0 || input.y != 0) && !isButtonDown)
-        {
-            StartCoroutine(MovePlayer(input));
-        }
-        else if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
-        {
-            isButtonDown = true;
-        }
-        else if (isButtonDown)
-        {
-            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            mousePosition.z = 0f;
+        isButtonDown = input.x != 0 || input.y != 0;
 
-            Vector3 direction = (mousePosition - transform.position).normalized;
-
-            if (direction.x != 0f || moveY != 0f)
-            {
-                input.x = Mathf.RoundToInt(direction.x);
-                input.y = Mathf.RoundToInt(direction.y);
-
-                StartCoroutine(MovePlayer(input));
-            }
+        if (!isMoving && isButtonDown)
+        {
+            StopAllCoroutines();
+            StartCoroutine(MovePlayer());
         }
     }
 
-    private IEnumerator MovePlayer(Vector3Int direction)
+    private IEnumerator MovePlayer()
     {
         isMoving = true;
 
-        string dir = GetDirection(direction);
-
-        if (direction != lastDirection) //turn first
+        while (isButtonDown)
         {
-            //https://discussions.unity.com/t/vector2-angle-how-do-i-get-if-its-cw-or-ccw/101180/5
-            bool clockwise = Mathf.Sign(lastDirection.x * direction.y - lastDirection.y * direction.x) <= 0;
-            int nrOfTurns = Mathf.RoundToInt(Vector3.Angle(direction, lastDirection) / 45f);
+            string dir = GetDirection(input);
 
-            string[] turns = GetTurns(GetDirection(lastDirection), nrOfTurns, clockwise);
-            
-            for (int i = 0; i < nrOfTurns; i++)
+            if (input != lastDirection) //turn first
             {
-                animator.PlayTurnAnimation(turns[i]);
-                yield return new WaitForSeconds(timeToTurn);
-            }
-        }
-        else
-        {
-            float elapsedTime = 0f;
+                //https://discussions.unity.com/t/vector2-angle-how-do-i-get-if-its-cw-or-ccw/101180/5
+                bool clockwise = Mathf.Sign(lastDirection.x * input.y - lastDirection.y * input.x) <= 0;
+                int nrOfTurns = Mathf.RoundToInt(Vector3.Angle(input, lastDirection) / 45f);
 
-            Vector3Int gridPosition = grid.WorldToCell(transform.position);
+                string[] turns = GetTurns(GetDirection(lastDirection), nrOfTurns, clockwise);
 
-            startPosition = transform.position;
-            targetPosition = grid.CellToWorld(gridPosition + direction);
-
-            if (!worldManager.IsPositionWalkable(targetPosition))
-            {
-                isMoving = false;
-                yield break;
-            }
-
-            if (direction.x != 0 && direction.y != 0) //diagonal movement
-            {
-                Vector3 checkPosition = grid.CellToWorld(gridPosition + new Vector3Int(direction.x, 0, 0));
-
-                if (worldManager.IsPositionWalkable(checkPosition))
+                if (input.x != 0 || input.y != 0)
                 {
-                    checkPosition = grid.CellToWorld(gridPosition + new Vector3Int(0, direction.y, 0));
-                    
-                    if (!worldManager.IsPositionWalkable(checkPosition))
+                    lastDirection = input;
+                }
+
+                for (int i = 0; i < nrOfTurns; i++)
+                {
+                    animator.PlayTurnAnimation(turns[i]);
+                    yield return new WaitForSeconds(timeToTurn);
+                }
+            }
+            else
+            {
+                float elapsedTime = 0f;
+
+                Vector3Int gridPosition = grid.WorldToCell(transform.position);
+
+                startPosition = transform.position;
+                targetPosition = grid.CellToWorld(gridPosition + input);
+
+                animator.PlayWalkAnimation(dir);
+
+                if (worldManager.IsPositionWalkable(targetPosition))
+                {
+                    if (input.x != 0 && input.y != 0) //diagonal movement
                     {
-                        isMoving = false;
-                        yield break;
+                        Vector3 checkPosition = grid.CellToWorld(gridPosition + new Vector3Int(input.x, 0, 0));
+
+                        if (worldManager.IsPositionWalkable(checkPosition))
+                        {
+                            checkPosition = grid.CellToWorld(gridPosition + new Vector3Int(0, input.y, 0));
+
+                            if (worldManager.IsPositionWalkable(checkPosition))
+                            {
+                                //TODO: Fix diagonal movement
+                                while (elapsedTime < timeToMove * (targetPosition - startPosition).magnitude)
+                                {
+                                    transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / timeToMove);
+                                    elapsedTime += Time.deltaTime;
+                                    yield return null;
+                                }
+
+                                transform.position = targetPosition;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //TODO: Fix diagonal movement
+                        while (elapsedTime < timeToMove * (targetPosition - startPosition).magnitude)
+                        {
+                            transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / timeToMove);
+                            elapsedTime += Time.deltaTime;
+                            yield return null;
+                        }
+
+                        transform.position = targetPosition;
                     }
                 }
-                else
+
+                if (input.x != 0 || input.y != 0)
                 {
-                    isMoving = false;
-                    yield break;
+                    lastDirection = input;
                 }
             }
 
-            animator.PlayWalkAnimation(dir);
-
-            //TODO: Fix diagonal movement
-            while (elapsedTime < timeToMove)
-            {
-                transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / timeToMove);
-                elapsedTime += Time.deltaTime;
-                yield return null;
-            }
-
-            transform.position = targetPosition;
+            yield return null;
         }
 
-        lastDirection = direction;
-        animator.PlayIdleAnimation(dir);
-
+        animator.PlayIdleAnimation(GetDirection(lastDirection));
         isMoving = false;
     }
 
