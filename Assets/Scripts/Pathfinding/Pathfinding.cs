@@ -51,7 +51,7 @@ public class Pathfinding : MonoBehaviour
 
             foreach (Node neighbor in nodes.GetNeighbors(currentNode, layer))
             {
-                if (!neighbor.IsWalkable(layer, Vector3Int.zero) || closedSet.Contains(neighbor))
+                if (!neighbor.IsWalkable(layer) || closedSet.Contains(neighbor))
                 {
                     continue;
                 }

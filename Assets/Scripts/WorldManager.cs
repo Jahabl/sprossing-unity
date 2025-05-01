@@ -121,6 +121,7 @@ public class WorldManager : MonoBehaviour
 
         player.transform.position = new Vector3(saveData.playerPosition[0], saveData.playerPosition[1], 0f);
         player.SetLastDirection(saveData.playerDirection);
+        player.SetLayer(saveData.playerDirection[2]);
 
         for (int i = 0; i < tilemaps.Length; i++)
         {

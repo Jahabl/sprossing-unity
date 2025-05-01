@@ -130,7 +130,7 @@ public class NodeGrid : MonoBehaviour
                     {
                         if ((x + y)%2 == 0) //is diagonal
                         {
-                            if (!nodes[checkX, centerNode.gridY].IsWalkable(layer, new Vector3Int(x, y, 0)) || !nodes[centerNode.gridX, checkY].IsWalkable(layer, new Vector3Int(x, y, 0)))
+                            if (!nodes[checkX, centerNode.gridY].IsWalkable(layer) || !nodes[centerNode.gridX, checkY].IsWalkable(layer))
                             {
                                 continue;
                             }

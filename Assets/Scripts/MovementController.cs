@@ -181,4 +181,10 @@ public class MovementController : MonoBehaviour
         lastDirection = new Vector3Int(direction[0], direction[1], 0);
         animator.PlayIdleAnimation(GetDirection(lastDirection));
     }
+
+    public void SetLayer(int layer)
+    {
+        this.layer = layer;
+        spriteRenderer.sortingOrder = layer - 5;
+    }
 }

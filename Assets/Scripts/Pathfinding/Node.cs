@@ -51,7 +51,7 @@ public class Node : IHeapItem<Node>
         return -compare;
     }
 
-    public int GetLevel(int layer, Vector3Int direction)
+    public int GetLevel(int layer, Vector3Int direction) //player movement
     {
         if (gridID <= 0)
         {
@@ -74,7 +74,7 @@ public class Node : IHeapItem<Node>
         return 0;
     }
 
-    public bool IsWalkable(int layer, Vector3Int direction)
+    public bool IsWalkable(int layer) //NPC movement
     {
         if (gridID <= 0)
         {
@@ -84,10 +84,6 @@ public class Node : IHeapItem<Node>
         if (layer == gridID || gridID % layer == 0)
         {
             return true;
-        }
-        else if (direction.x == 0)
-        {
-            return Math.Abs(layer - gridID) == 1;
         }
 
         return false;
