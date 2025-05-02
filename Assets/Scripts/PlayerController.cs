@@ -104,7 +104,6 @@ public class PlayerController : MovementController
                     }
                     else
                     {
-                        //TODO: Fix diagonal movement
                         while (elapsedTime < timeToMove * (targetPosition - startPosition).magnitude)
                         {
                             transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / timeToMove);
