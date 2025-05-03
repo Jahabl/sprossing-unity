@@ -161,4 +161,12 @@ public class PlayerController : MovementController
 
         worldManager.Waterscape(transform.position + new Vector3(lastDirection.x * grid.cellSize.x, lastDirection.y * grid.cellSize.y, 0), layer);
     }
+
+    public void Ramp()
+    {
+        if (lastDirection.x != 0 || lastDirection.y != 1)
+            return;
+
+        worldManager.PlaceRemoveRamp(transform.position + new Vector3(lastDirection.x * grid.cellSize.x, lastDirection.y * grid.cellSize.y, 0), layer);
+    }
 }
