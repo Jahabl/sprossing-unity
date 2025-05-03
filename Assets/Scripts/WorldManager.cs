@@ -262,10 +262,13 @@ public class WorldManager : MonoBehaviour
                         {
                             for (int y = -1; y <= 1; y++)
                             {
-                                tile = tilemaps[tileLayer + 3].GetTile<SeasonalRuleTile>(tilePosition + Vector3Int.up + new Vector3Int(x, y, 0));
-                                if (tile != null && (tile.tileType == TileType.Water || tile.tileType == TileType.Cliff))
+                                if (y == 0 || x == 0)
                                 {
-                                    return;
+                                    tile = tilemaps[tileLayer + 3].GetTile<SeasonalRuleTile>(tilePosition + Vector3Int.up + new Vector3Int(x, y, 0));
+                                    if (tile != null && (tile.tileType == TileType.Water || tile.tileType == TileType.Cliff))
+                                    {
+                                        return;
+                                    }
                                 }
                             }
                         }
@@ -334,8 +337,21 @@ public class WorldManager : MonoBehaviour
         switch (tile.tileType)
         {
             case TileType.Grass: //add water
-                if (nodeGrid.GetNeighbors(nodeGrid.GetNodeFromWorldPosition(position), layer, true).Count < 8)
-                    return;
+                for (int x = -1; x <= 1; x++)
+                {
+                    for (int y = -1; y <= 1; y++)
+                    {
+                        if (y == 0 || x == 0)
+                        {
+                            SeasonalRuleTile tileA = tilemaps[tileLayer].GetTile<SeasonalRuleTile>(tilePosition + new Vector3Int(x, y, 0));
+                            SeasonalRuleTile tileB = tilemaps[tileLayer + 1].GetTile<SeasonalRuleTile>(tilePosition + new Vector3Int(x, y, 0));
+                            if (tileA == null || (tileB != null && tileB.tileType == TileType.Cliff))
+                            {
+                                return;
+                            }
+                        }
+                    }
+                }
                 
                 tilemaps[tileLayer].SetTile(tilePosition, allTiles[1]);
                 tilemaps[tileLayer + 1].SetTile(tilePosition, allTiles[2]);
@@ -343,8 +359,21 @@ public class WorldManager : MonoBehaviour
                 nodeGrid.UpdateNodeInGrid(position, tilePosition);
                 break;
             case TileType.Path: //add water
-                if (nodeGrid.GetNeighbors(nodeGrid.GetNodeFromWorldPosition(position), layer, true).Count < 8)
-                    return;
+                for (int x = -1; x <= 1; x++)
+                {
+                    for (int y = -1; y <= 1; y++)
+                    {
+                        if (y == 0 || x == 0)
+                        {
+                            SeasonalRuleTile tileA = tilemaps[tileLayer - 1].GetTile<SeasonalRuleTile>(tilePosition + new Vector3Int(x, y, 0));
+                            SeasonalRuleTile tileB = tilemaps[tileLayer].GetTile<SeasonalRuleTile>(tilePosition + new Vector3Int(x, y, 0));
+                            if (tileA == null || (tileB != null && tileB.tileType == TileType.Cliff))
+                            {
+                                return;
+                            }
+                        }
+                    }
+                }
 
                 tilemaps[tileLayer - 1].SetTile(tilePosition, allTiles[1]);
                 tilemaps[tileLayer].SetTile(tilePosition, allTiles[2]);
@@ -369,21 +398,21 @@ public class WorldManager : MonoBehaviour
 
         Vector3Int tilePosition = tilemaps[0].WorldToCell(position);
 
-        SeasonalRuleTile tileA = tilemaps[tileLayer].GetTile<SeasonalRuleTile>(tilePosition);
+        SeasonalRuleTile tile = tilemaps[tileLayer].GetTile<SeasonalRuleTile>(tilePosition);
 
-        if (tileA == null)
+        if (tile == null)
         {
             tileLayer--;
-            tileA = tilemaps[tileLayer].GetTile<SeasonalRuleTile>(tilePosition);
+            tile = tilemaps[tileLayer].GetTile<SeasonalRuleTile>(tilePosition);
         }
 
-        if (tileA != null)
+        if (tile != null)
         {
-            switch (tileA.tileType)
+            switch (tile.tileType)
             {
                 case TileType.Path: //place ramp
-                    SeasonalRuleTile tileB = tilemaps[tileLayer].GetTile<SeasonalRuleTile>(tilePosition + Vector3Int.up);
-                    if (tileB != null && tileB.tileType == TileType.Cliff)
+                    tile = tilemaps[tileLayer].GetTile<SeasonalRuleTile>(tilePosition + Vector3Int.up);
+                    if (tile != null && tile.tileType == TileType.Cliff)
                     {
                         tilemaps[tileLayer].SetTile(tilePosition, allTiles[4]);
                         tilemaps[tileLayer].SetTile(tilePosition + Vector3Int.up, allTiles[4]);
@@ -394,8 +423,8 @@ public class WorldManager : MonoBehaviour
 
                     break;
                 case TileType.Grass: //place ramp
-                    SeasonalRuleTile tileC = tilemaps[tileLayer + 1].GetTile<SeasonalRuleTile>(tilePosition + Vector3Int.up);
-                    if (tileC != null && tileC.tileType == TileType.Cliff)
+                    tile = tilemaps[tileLayer + 1].GetTile<SeasonalRuleTile>(tilePosition + Vector3Int.up);
+                    if (tile != null && tile.tileType == TileType.Cliff)
                     {
                         tilemaps[tileLayer + 1].SetTile(tilePosition, allTiles[4]);
                         tilemaps[tileLayer + 1].SetTile(tilePosition + Vector3Int.up, allTiles[4]);
@@ -408,8 +437,8 @@ public class WorldManager : MonoBehaviour
                 case TileType.Cliff:
                     return;
                 case TileType.Ramp: //remove ramp
-                    SeasonalRuleTile tileD = tilemaps[tileLayer].GetTile<SeasonalRuleTile>(tilePosition + Vector3Int.up);
-                    if (tileD != null && tileD.tileType == TileType.Ramp)
+                    tile = tilemaps[tileLayer].GetTile<SeasonalRuleTile>(tilePosition + Vector3Int.up);
+                    if (tile != null && tile.tileType == TileType.Ramp)
                     {
                         tilemaps[tileLayer].SetTile(tilePosition, null);
                         tilemaps[tileLayer].SetTile(tilePosition + Vector3Int.up, allTiles[1]);

@@ -141,7 +141,7 @@ public class NodeGrid : MonoBehaviour
         return null;
     }
 
-    public List<Node> GetNeighbors(Node centerNode, int layer, bool includeAll = false)
+    public List<Node> GetNeighbors(Node centerNode, int layer)
     {
         List<Node> neighbors = new List<Node>();
 
@@ -156,7 +156,7 @@ public class NodeGrid : MonoBehaviour
 
                     if (checkX >= 0 && checkX < gridSize.x && checkY >= 0 && checkY < gridSize.y)
                     {
-                        if (!includeAll && (x + y)%2 == 0) //check diagonal
+                        if ((x + y)%2 == 0) //check diagonal
                         {
                             if (!nodes[checkX, centerNode.gridY].IsWalkable(layer) || !nodes[centerNode.gridX, checkY].IsWalkable(layer))
                             {
