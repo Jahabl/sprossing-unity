@@ -17,7 +17,8 @@ public class SeasonalRuleTile : RuleTile<SeasonalRuleTile.Neighbor>
         //This = 1, NotThis = 2
         public const int Any = 3;
         public const int NotAny = 4;
-        public const int OnlyAny = 5;
+        public const int OnlyFirst = 5;
+        public const int OnlySecond = 6;
     }
 
     public override bool RuleMatch(int neighbor, TileBase tile)
@@ -28,7 +29,8 @@ public class SeasonalRuleTile : RuleTile<SeasonalRuleTile.Neighbor>
             case Neighbor.NotThis: return Check_NotThis(tile);
             case Neighbor.Any: return Check_Any(tile);
             case Neighbor.NotAny: return Check_NotAny(tile);
-            case Neighbor.OnlyAny: return Check_OnlyAny(tile);
+            case Neighbor.OnlyFirst: return Check_OnlyFirst(tile);
+            case Neighbor.OnlySecond: return Check_OnlySecond(tile);
         }
 
         return base.RuleMatch(neighbor, tile);
@@ -59,9 +61,14 @@ public class SeasonalRuleTile : RuleTile<SeasonalRuleTile.Neighbor>
         return tile == null || !tilesToConnect.Contains(tile);
     }
 
-    private bool Check_OnlyAny(TileBase tile)
+    private bool Check_OnlyFirst(TileBase tile)
     {
-        return tilesToConnect.Contains(tile);
+        return tilesToConnect[0] == tile;
+    }
+
+    private bool Check_OnlySecond(TileBase tile)
+    {
+        return tilesToConnect[1] == tile;
     }
 
     /*public override bool GetTileAnimationData(Vector3Int position, ITilemap tilemap, ref TileAnimationData tileAnimationData)
