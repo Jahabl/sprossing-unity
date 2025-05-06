@@ -204,7 +204,6 @@ public class WorldManager : MonoBehaviour
                 break;
             case TileType.Path: //remove path
                 tilemaps[tileLayer].SetTile(tilePosition, null);
-                tilemaps[tileLayer - 1].SetTile(tilePosition, allTiles[0]);
 
                 nodeGrid.UpdateNodeInGrid(position, tilePosition);
                 break;
@@ -246,9 +245,8 @@ public class WorldManager : MonoBehaviour
                     if (layer - 4 >= tilemaps.Length)
                         return;
 
-                    tilemaps[tileLayer].SetTile(tilePosition, null);
-                    tilemaps[tileLayer + 1].SetTile(tilePosition, allTiles[1]);
-                    tilemaps[tileLayer + 3].SetTile(tilePosition + Vector3Int.up, allTiles[0]);
+                    tilemaps[tileLayer].SetTile(tilePosition, allTiles[1]);
+                    tilemaps[tileLayer + 2].SetTile(tilePosition + Vector3Int.up, allTiles[0]);
 
                     nodeGrid.UpdateNodeInGrid(position + new Vector3(0f, GetComponent<Grid>().cellSize.y, 0f), tilePosition + Vector3Int.up);
                     nodeGrid.UpdateNodeInGrid(position, tilePosition);
@@ -337,6 +335,8 @@ public class WorldManager : MonoBehaviour
         switch (tile.tileType)
         {
             case TileType.Grass: //add water
+                bool invalidNeighborA = false;
+
                 for (int x = -1; x <= 1; x++)
                 {
                     for (int y = -1; y <= 1; y++)
@@ -347,18 +347,45 @@ public class WorldManager : MonoBehaviour
                             SeasonalRuleTile tileB = tilemaps[tileLayer + 1].GetTile<SeasonalRuleTile>(tilePosition + new Vector3Int(x, y, 0));
                             if (tileA == null || (tileB != null && tileB.tileType == TileType.Cliff))
                             {
-                                return;
+                                if (y >= 0)
+                                    return;
+                                
+                                invalidNeighborA = true;
+                                break;
                             }
                         }
                     }
                 }
-                
-                tilemaps[tileLayer].SetTile(tilePosition, allTiles[1]);
-                tilemaps[tileLayer + 1].SetTile(tilePosition, allTiles[2]);
+
+                if (invalidNeighborA)
+                {
+                    SeasonalRuleTile tileA = tilemaps[tileLayer].GetTile<SeasonalRuleTile>(tilePosition + new Vector3Int(0, -1, 0));
+                    SeasonalRuleTile tileB = tilemaps[tileLayer - 2].GetTile<SeasonalRuleTile>(tilePosition + new Vector3Int(0, -1, 0));
+                    if (tileA != null || tileB == null || tileB.tileType != TileType.Cliff)
+                        return;
+                    
+                    tileA = tilemaps[tileLayer].GetTile<SeasonalRuleTile>(tilePosition + new Vector3Int(0, -2, 0));
+                    tileB = tilemaps[tileLayer - 3].GetTile<SeasonalRuleTile>(tilePosition + new Vector3Int(0, -2, 0));
+                    if (tileA != null || tileB == null || tileB.tileType != TileType.Grass)
+                        return;
+
+                    tilemaps[tileLayer].SetTile(tilePosition, allTiles[1]);
+                    tilemaps[tileLayer + 1].SetTile(tilePosition, allTiles[5]);
+                    tilemaps[tileLayer - 2].SetTile(tilePosition + new Vector3Int(0, -1, 0), allTiles[5]);
+
+                    nodeGrid.UpdateNodeInGrid(position - new Vector3(0f, GetComponent<Grid>().cellSize.y, 0f), tilePosition + new Vector3Int(0, -1, 0));
+                }
+                else
+                {
+                    tilemaps[tileLayer].SetTile(tilePosition, allTiles[1]);
+                    tilemaps[tileLayer + 1].SetTile(tilePosition, allTiles[2]);
+                }
 
                 nodeGrid.UpdateNodeInGrid(position, tilePosition);
                 break;
             case TileType.Path: //add water
+                bool invalidNeighborB = false;
+
                 for (int x = -1; x <= 1; x++)
                 {
                     for (int y = -1; y <= 1; y++)
@@ -369,14 +396,39 @@ public class WorldManager : MonoBehaviour
                             SeasonalRuleTile tileB = tilemaps[tileLayer].GetTile<SeasonalRuleTile>(tilePosition + new Vector3Int(x, y, 0));
                             if (tileA == null || (tileB != null && tileB.tileType == TileType.Cliff))
                             {
-                                return;
+                                if (y >= 0)
+                                    return;
+                                
+                                invalidNeighborB = true;
+                                break;
                             }
                         }
                     }
                 }
 
-                tilemaps[tileLayer - 1].SetTile(tilePosition, allTiles[1]);
-                tilemaps[tileLayer].SetTile(tilePosition, allTiles[2]);
+                if (invalidNeighborB)
+                {
+                    SeasonalRuleTile tileA = tilemaps[tileLayer - 1].GetTile<SeasonalRuleTile>(tilePosition + new Vector3Int(0, -1, 0));
+                    SeasonalRuleTile tileB = tilemaps[tileLayer - 3].GetTile<SeasonalRuleTile>(tilePosition + new Vector3Int(0, -1, 0));
+                    if (tileA != null || tileB == null || tileB.tileType != TileType.Cliff)
+                        return;
+                    
+                    tileA = tilemaps[tileLayer - 1].GetTile<SeasonalRuleTile>(tilePosition + new Vector3Int(0, -2, 0));
+                    tileB = tilemaps[tileLayer - 4].GetTile<SeasonalRuleTile>(tilePosition + new Vector3Int(0, -2, 0));
+                    if (tileA != null || tileB == null || tileB.tileType != TileType.Grass)
+                        return;
+
+                    tilemaps[tileLayer - 1].SetTile(tilePosition, allTiles[1]);
+                    tilemaps[tileLayer].SetTile(tilePosition, allTiles[5]);
+                    tilemaps[tileLayer - 3].SetTile(tilePosition + new Vector3Int(0, -1, 0), allTiles[5]);
+
+                    nodeGrid.UpdateNodeInGrid(position - new Vector3(0f, GetComponent<Grid>().cellSize.y, 0f), tilePosition + new Vector3Int(0, -1, 0));
+                }
+                else
+                {
+                    tilemaps[tileLayer - 1].SetTile(tilePosition, allTiles[1]);
+                    tilemaps[tileLayer].SetTile(tilePosition, allTiles[2]);
+                }
 
                 nodeGrid.UpdateNodeInGrid(position, tilePosition);
                 break;

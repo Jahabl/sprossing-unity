@@ -58,7 +58,7 @@ public class Node : IHeapItem<Node>
             return gridID;
         }
 
-        if (layer == gridID || gridID % layer == 0)
+        if (layer == gridID || gridID % layer == 0 || gridID - layer == 6)
         {
             return layer;
         }
