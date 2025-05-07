@@ -73,17 +73,11 @@ public class NodeGrid : MonoBehaviour
                                 switch (tile.tileType)
                                 {
                                     case TileType.Cliff:
+                                    case TileType.Waterfall:
                                         nodes[x, y].gridID = -i;
                                         break;
                                     case TileType.Ramp:
-                                        if (nodes[x, y].gridID <= 0) //top of ramp
-                                        {
-                                            nodes[x, y].gridID = nodes[x, y - 1].gridID + 1;
-                                        }
-                                        else //bottom of ramp
-                                        {
-                                            nodes[x, y].gridID++;
-                                        }
+                                        nodes[x, y].gridID = nodes[x, y - 1].gridID + 1;
 
                                         break;
                                     case TileType.Path:
