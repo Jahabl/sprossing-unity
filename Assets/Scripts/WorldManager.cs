@@ -275,30 +275,21 @@ public class WorldManager : MonoBehaviour
         }
         else if (layer - 7 > 2) //add cliff
         {
-            tileLayer -= 2;
-            tile = tilemaps[tileLayer].GetTile<SeasonalRuleTile>(tilePosition - Vector3Int.up);
-            
-            if (tile != null && tile.tileType == TileType.Path)
+            tileLayer -= 3;
+            tile = tilemaps[tileLayer + 1].GetTile<SeasonalRuleTile>(tilePosition - Vector3Int.up);
+
+            if (tile == null)
             {
-                tilemaps[tileLayer].SetTile(tilePosition - Vector3Int.up, allTiles[1]);
-                tilemaps[tileLayer + 2].SetTile(tilePosition, allTiles[0]);
+                tile = tilemaps[tileLayer].GetTile<SeasonalRuleTile>(tilePosition);
+            }
+
+            if (tile != null && (tile.tileType == TileType.Grass || tile.tileType == TileType.Ramp))
+            {
+                tilemaps[tileLayer + 1].SetTile(tilePosition - Vector3Int.up, allTiles[1]);
+                tilemaps[tileLayer + 3].SetTile(tilePosition, allTiles[0]);
 
                 nodeGrid.UpdateNodeInGrid(position - new Vector3(0f, GetComponent<Grid>().cellSize.y, 0f), tilePosition - Vector3Int.up);
                 nodeGrid.UpdateNodeInGrid(position, tilePosition);
-            }
-            else if (tile == null)
-            {
-                tileLayer--;
-                tile = tilemaps[tileLayer].GetTile<SeasonalRuleTile>(tilePosition);
-
-                if (tile != null && tile.tileType == TileType.Grass)
-                {
-                    tilemaps[tileLayer + 1].SetTile(tilePosition - Vector3Int.up, allTiles[1]);
-                    tilemaps[tileLayer + 3].SetTile(tilePosition, allTiles[0]);
-
-                    nodeGrid.UpdateNodeInGrid(position - new Vector3(0f, GetComponent<Grid>().cellSize.y, 0f), tilePosition - Vector3Int.up);
-                    nodeGrid.UpdateNodeInGrid(position, tilePosition);
-                }
             }
         }
     }
@@ -404,7 +395,7 @@ public class WorldManager : MonoBehaviour
             switch (tile.tileType)
             {
                 case TileType.Path: //place ramp
-                case TileType.Grass: //place ramp
+                case TileType.Grass:
                     tile = tilemaps[tileLayer + 1].GetTile<SeasonalRuleTile>(tilePosition + Vector3Int.up);
                     if (tile != null && tile.tileType == TileType.Cliff)
                     {
