@@ -503,4 +503,29 @@ public class WorldManager : MonoBehaviour
             }
         }
     }
+
+    public void PlaceHouse(Vector3 position, int layer, GameObject house)
+    {
+        if ((layer - 1) % 3 != 0) //on ramp
+            return;
+
+        int tileLayer = layer - 5;
+
+        Vector3 cellSize = GetComponent<Grid>().cellSize;
+
+        for (int x = -1; x <= 1; x++)
+        {
+            for (int y = 0; y <= 1; y++)
+            {
+                Node checkNode = nodeGrid.GetNodeFromWorldPosition(position + new Vector3(cellSize.x * x, cellSize.y * y, 0f));
+                if (checkNode.gridID != layer)
+                {
+                    return;
+                }
+            }
+        }
+
+        GameObject newHouse = Instantiate(house, position, Quaternion.identity);
+        newHouse.GetComponent<SpriteRenderer>().sortingOrder = layer - 5;
+    }
 }

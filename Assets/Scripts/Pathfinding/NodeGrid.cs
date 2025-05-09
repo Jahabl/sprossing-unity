@@ -72,6 +72,14 @@ public class NodeGrid : MonoBehaviour
                             {
                                 switch (tile.tileType)
                                 {
+                                    case TileType.Cliff:
+                                    case TileType.Waterfall:
+                                        if (nodes[x, y].gridID <= 0)
+                                        {
+                                            nodes[x, y].gridID = -i;
+                                        }
+
+                                        break;
                                     case TileType.Ramp:
                                         nodes[x, y].gridID = nodes[x, y - 1].gridID + 1;
 
@@ -100,6 +108,10 @@ public class NodeGrid : MonoBehaviour
                             {
                                 nodes[x, y].gridID = i + 7;
                             }
+                        }
+                        else
+                        {
+                            nodes[x, y].gridID = -i;
                         }
                     }
                 }
@@ -183,6 +195,14 @@ public class NodeGrid : MonoBehaviour
                     {
                         switch (tile.tileType)
                         {
+                            case TileType.Cliff:
+                            case TileType.Waterfall:
+                                if (nodes[updateNode.gridX, updateNode.gridY].gridID <= 0)
+                                {
+                                    nodes[updateNode.gridX, updateNode.gridY].gridID = -i;
+                                }
+
+                                break;
                             case TileType.Ramp:
                                 if (nodes[updateNode.gridX, updateNode.gridY].gridID <= 0) //top of ramp
                                 {

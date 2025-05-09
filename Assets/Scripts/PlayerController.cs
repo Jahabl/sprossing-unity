@@ -140,7 +140,7 @@ public class PlayerController : MovementController
 
     public void Pathing()
     {
-        if (lastDirection.x != 0 && lastDirection.y != 0)
+        if (lastDirection.x != 0 && lastDirection.y != 0) //can't be on diagonal
             return;
 
         worldManager.Pathing(transform.position + new Vector3(lastDirection.x * grid.cellSize.x, lastDirection.y * grid.cellSize.y, 0), layer);
@@ -148,7 +148,7 @@ public class PlayerController : MovementController
 
     public void Terraform()
     {
-        if (lastDirection.x != 0 && lastDirection.y != 0)
+        if (lastDirection.x != 0 && lastDirection.y != 0) //can't be on diagonal
             return;
 
         worldManager.Terraform(transform.position + new Vector3(lastDirection.x * grid.cellSize.x, lastDirection.y * grid.cellSize.y, 0), layer);
@@ -156,7 +156,7 @@ public class PlayerController : MovementController
 
     public void Waterscape()
     {
-        if (lastDirection.x != 0 && lastDirection.y != 0)
+        if (lastDirection.x != 0 && lastDirection.y != 0) //can't be on diagonal
             return;
 
         worldManager.Waterscape(transform.position + new Vector3(lastDirection.x * grid.cellSize.x, lastDirection.y * grid.cellSize.y, 0), layer);
@@ -164,9 +164,17 @@ public class PlayerController : MovementController
 
     public void Ramp()
     {
-        if (lastDirection.x != 0 || lastDirection.y != 1)
+        if (lastDirection.x != 0 || lastDirection.y != 1) //not facing up
             return;
 
         worldManager.PlaceRemoveRamp(transform.position + new Vector3(lastDirection.x * grid.cellSize.x, lastDirection.y * grid.cellSize.y, 0), layer);
+    }
+
+    public void PlaceHouse(GameObject house)
+    {
+        if (lastDirection.x != 0 || lastDirection.y != 1) //not facing up
+            return;
+
+        worldManager.PlaceHouse(transform.position + new Vector3(lastDirection.x * grid.cellSize.x, lastDirection.y * grid.cellSize.y, 0), layer, house);
     }
 }
