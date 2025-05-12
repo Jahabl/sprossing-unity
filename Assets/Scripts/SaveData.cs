@@ -9,6 +9,9 @@ public class SaveData
     public List<SavedTile> layer3;
     public List<SavedTile> layer4;
     public List<SavedTile> layer5;
+    public List<SavedTile> layer6;
+    public List<SavedTile> layer7;
+    public List<SavedTile> layer8;
 
     public float[] playerPosition;
     public int[] playerDirection;
@@ -21,8 +24,8 @@ public class SaveData
         playerPosition[0] = player.transform.position.x;
         playerPosition[1] = player.transform.position.y;
 
-        playerDirection[0] = player.lastDirection.x;
-        playerDirection[1] = player.lastDirection.y;
+        playerDirection[0] = player.LastDirection.x;
+        playerDirection[1] = player.LastDirection.y;
         playerDirection[2] = player.layer;
     }
 }

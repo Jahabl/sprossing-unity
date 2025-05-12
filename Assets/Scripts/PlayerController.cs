@@ -35,17 +35,17 @@ public class PlayerController : MovementController
         {
             string dir = GetDirection(input);
 
-            if (input != lastDirection) //turn first
+            if (input != LastDirection) //turn first
             {
                 //https://discussions.unity.com/t/vector2-angle-how-do-i-get-if-its-cw-or-ccw/101180/5
-                bool clockwise = Mathf.Sign(lastDirection.x * input.y - lastDirection.y * input.x) <= 0;
-                int nrOfTurns = Mathf.RoundToInt(Vector3.Angle(input, lastDirection) / 45f);
+                bool clockwise = Mathf.Sign(LastDirection.x * input.y - LastDirection.y * input.x) <= 0;
+                int nrOfTurns = Mathf.RoundToInt(Vector3.Angle(input, LastDirection) / 45f);
 
-                string[] turns = GetTurns(GetDirection(lastDirection), nrOfTurns, clockwise);
+                string[] turns = GetTurns(GetDirection(LastDirection), nrOfTurns, clockwise);
 
                 if (input.x != 0 || input.y != 0)
                 {
-                    lastDirection = input;
+                    LastDirection = input;
                 }
 
                 for (int i = 0; i < nrOfTurns; i++)
@@ -125,54 +125,54 @@ public class PlayerController : MovementController
 
                 if (input.x != 0 || input.y != 0)
                 {
-                    lastDirection = input;
+                    LastDirection = input;
                 }
             }
 
             yield return null;
         }
 
-        animator.PlayIdleAnimation(GetDirection(lastDirection));
+        animator.PlayIdleAnimation(GetDirection(LastDirection));
         isMoving = false;
     }
 
     public void Pathing()
     {
-        if (lastDirection.x != 0 && lastDirection.y != 0) //can't be on diagonal
+        if (LastDirection.x != 0 && LastDirection.y != 0) //can't be on diagonal
             return;
 
-        worldManager.Pathing(transform.position + new Vector3(lastDirection.x * grid.cellSize.x, lastDirection.y * grid.cellSize.y, 0), layer);
+        worldManager.Pathing(transform.position + new Vector3(LastDirection.x * grid.cellSize.x, LastDirection.y * grid.cellSize.y, 0), layer);
     }
 
     public void Terraform()
     {
-        if (lastDirection.x != 0 && lastDirection.y != 0) //can't be on diagonal
+        if (LastDirection.x != 0 && LastDirection.y != 0) //can't be on diagonal
             return;
 
-        worldManager.Terraform(transform.position + new Vector3(lastDirection.x * grid.cellSize.x, lastDirection.y * grid.cellSize.y, 0), layer);
+        worldManager.Terraform(transform.position + new Vector3(LastDirection.x * grid.cellSize.x, LastDirection.y * grid.cellSize.y, 0), layer);
     }
 
     public void Waterscape()
     {
-        if (lastDirection.x != 0 && lastDirection.y != 0) //can't be on diagonal
+        if (LastDirection.x != 0 && LastDirection.y != 0) //can't be on diagonal
             return;
 
-        worldManager.Waterscape(transform.position + new Vector3(lastDirection.x * grid.cellSize.x, lastDirection.y * grid.cellSize.y, 0), layer);
+        worldManager.Waterscape(transform.position + new Vector3(LastDirection.x * grid.cellSize.x, LastDirection.y * grid.cellSize.y, 0), layer);
     }
 
     public void Ramp()
     {
-        if (lastDirection.x != 0 || lastDirection.y != 1) //not facing up
+        if (LastDirection.x != 0) //not facing right direction
             return;
 
-        worldManager.PlaceRemoveRamp(transform.position + new Vector3(lastDirection.x * grid.cellSize.x, lastDirection.y * grid.cellSize.y, 0), layer);
+        worldManager.PlaceRemoveRamp(transform.position + new Vector3(LastDirection.x * grid.cellSize.x, LastDirection.y * grid.cellSize.y, 0), layer);
     }
 
     public void PlaceHouse(GameObject house)
     {
-        if (lastDirection.x != 0 || lastDirection.y != 1) //not facing up
+        if (LastDirection.x != 0 || LastDirection.y != 1) //not facing up
             return;
 
-        worldManager.PlaceHouse(transform.position + new Vector3(lastDirection.x * grid.cellSize.x, lastDirection.y * grid.cellSize.y, 0), layer, house);
+        worldManager.PlaceHouse(transform.position + new Vector3(LastDirection.x * grid.cellSize.x, LastDirection.y * grid.cellSize.y, 0), layer, house);
     }
 }

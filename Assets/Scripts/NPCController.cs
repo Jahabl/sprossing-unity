@@ -7,7 +7,6 @@ public class NPCController : MovementController
     [SerializeField] private float timeToTurn = 0.1f;
     [SerializeField] private float waitTime = 0.8f;
     [SerializeField] private float radius = 7.5f;
-    [SerializeField] private Transform target;
     private Node[] path;
     private bool isBusy;
 
@@ -45,13 +44,13 @@ public class NPCController : MovementController
             Vector3Int direction = new Vector3Int(Mathf.RoundToInt(pathDirection.x), Mathf.RoundToInt(pathDirection.y), 0);
             string dir = GetDirection(direction);
 
-            if (direction != lastDirection) //turn first
+            if (direction != LastDirection) //turn first
             {
                 //https://discussions.unity.com/t/vector2-angle-how-do-i-get-if-its-cw-or-ccw/101180/5
-                bool clockwise = Mathf.Sign(lastDirection.x * direction.y - lastDirection.y * direction.x) <= 0;
-                int nrOfTurns = Mathf.RoundToInt(Vector3.Angle(direction, lastDirection) / 45f);
+                bool clockwise = Mathf.Sign(LastDirection.x * direction.y - LastDirection.y * direction.x) <= 0;
+                int nrOfTurns = Mathf.RoundToInt(Vector3.Angle(direction, LastDirection) / 45f);
 
-                string[] turns = GetTurns(GetDirection(lastDirection), nrOfTurns, clockwise);
+                string[] turns = GetTurns(GetDirection(LastDirection), nrOfTurns, clockwise);
 
                 for (int j = 0; j < nrOfTurns; j++)
                 {
@@ -72,7 +71,7 @@ public class NPCController : MovementController
             }
 
             transform.position = targetPosition;
-            lastDirection = direction;
+            LastDirection = direction;
 
             layer = path[i].layer;
 
@@ -86,7 +85,7 @@ public class NPCController : MovementController
             }
         }
 
-        animator.PlayIdleAnimation(GetDirection(lastDirection));
+        animator.PlayIdleAnimation(GetDirection(LastDirection));
 
         yield return new WaitForSeconds(waitTime);
 

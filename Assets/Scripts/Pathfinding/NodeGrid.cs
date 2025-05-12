@@ -185,6 +185,7 @@ public class NodeGrid : MonoBehaviour
     public void UpdateNodeInGrid(Vector3 worldPosition, Vector3Int tilePosition)
     {
         Node updateNode = GetNodeFromWorldPosition(worldPosition);
+
         nodes[updateNode.gridX, updateNode.gridY] = null;
 
         for (int i = 0; i < tilemaps.Length; i += 3) //bottom to top
@@ -225,14 +226,7 @@ public class NodeGrid : MonoBehaviour
 
                                     break;
                                 case TileType.Ramp:
-                                    if (nodes[updateNode.gridX, updateNode.gridY].gridID <= 0) //top of ramp
-                                    {
-                                        nodes[updateNode.gridX, updateNode.gridY].gridID = nodes[updateNode.gridX, updateNode.gridY - 1].gridID + 1;
-                                    }
-                                    else //bottom of ramp
-                                    {
-                                        nodes[updateNode.gridX, updateNode.gridY].gridID++;
-                                    }
+                                    nodes[updateNode.gridX, updateNode.gridY].gridID = nodes[updateNode.gridX, updateNode.gridY - 1].gridID + 1;
 
                                     break;
                                 case TileType.Path:

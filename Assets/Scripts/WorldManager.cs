@@ -101,6 +101,15 @@ public class WorldManager : MonoBehaviour
                 case 5:
                     saveData.layer5 = tiles;
                     break;
+                case 6:
+                    saveData.layer6 = tiles;
+                    break;
+                case 7:
+                    saveData.layer7 = tiles;
+                    break;
+                case 8:
+                    saveData.layer8 = tiles;
+                    break;
             }
         }
 
@@ -131,27 +140,30 @@ public class WorldManager : MonoBehaviour
             {
                 case 0:
                     savedTiles = saveData.layer0;
-
                     break;
                 case 1:
                     savedTiles = saveData.layer1;
-
                     break;
                 case 2:
                     savedTiles = saveData.layer2;
-
                     break;
                 case 3:
                     savedTiles = saveData.layer3;
-
                     break;
                 case 4:
                     savedTiles = saveData.layer4;
-
                     break;
                 case 5:
                     savedTiles = saveData.layer5;
-
+                    break;
+                case 6:
+                    savedTiles = saveData.layer6;
+                    break;
+                case 7:
+                    savedTiles = saveData.layer7;
+                    break;
+                case 8:
+                    savedTiles = saveData.layer8;
                     break;
             }
 
@@ -467,6 +479,22 @@ public class WorldManager : MonoBehaviour
                     }
 
                     break;
+            }
+        }
+        else if (tileLayer > 0)
+        {
+            tile = tilemaps[tileLayer - 2].GetTile<SeasonalRuleTile>(tilePosition);
+            if (tile != null && tile.tileType == TileType.Cliff)
+            {
+                tile = tilemaps[tileLayer - 3].GetTile<SeasonalRuleTile>(tilePosition + Vector3Int.down);
+                if (tile != null && tile.tileType == TileType.Grass)
+                {
+                    tilemaps[tileLayer - 2].SetTile(tilePosition, allTiles[4]);
+                    tilemaps[tileLayer - 2].SetTile(tilePosition + Vector3Int.down, allTiles[4]);
+
+                    nodeGrid.UpdateNodeInGrid(position - new Vector3(0f, GetComponent<Grid>().cellSize.y, 0f), tilePosition + Vector3Int.down);
+                    nodeGrid.UpdateNodeInGrid(position, tilePosition);
+                }
             }
         }
     }

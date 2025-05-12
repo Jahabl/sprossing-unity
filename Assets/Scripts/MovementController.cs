@@ -6,7 +6,7 @@ public class MovementController : MonoBehaviour
 
     protected Vector3 startPosition;
     protected Vector3 targetPosition;
-    public Vector3Int lastDirection  { get; protected set; }
+    public Vector3Int LastDirection { get; protected set; }
 
     protected AnimationController animator;
     protected SpriteRenderer spriteRenderer;
@@ -16,8 +16,8 @@ public class MovementController : MonoBehaviour
     {
         animator = GetComponent<AnimationController>();
 
-        lastDirection = new Vector3Int(0, -1, 0);
-        animator.PlayIdleAnimation(GetDirection(lastDirection));
+        LastDirection = new Vector3Int(0, -1, 0);
+        animator.PlayIdleAnimation(GetDirection(LastDirection));
 
         spriteRenderer = GetComponent<SpriteRenderer>();
         layer = spriteRenderer.sortingOrder + 5;
@@ -180,8 +180,8 @@ public class MovementController : MonoBehaviour
 
     public void SetLastDirection(int[] direction)
     {
-        lastDirection = new Vector3Int(direction[0], direction[1], 0);
-        animator.PlayIdleAnimation(GetDirection(lastDirection));
+        LastDirection = new Vector3Int(direction[0], direction[1], 0);
+        animator.PlayIdleAnimation(GetDirection(LastDirection));
     }
 
     public void SetLayer(int layer)
