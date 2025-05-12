@@ -139,7 +139,7 @@ public class NodeGrid : MonoBehaviour
         return null;
     }
 
-    public List<Node> GetNeighbors(Node centerNode, int layer)
+    public List<Node> GetNeighbors(Node centerNode)
     {
         List<Node> neighbors = new List<Node>();
 
@@ -156,7 +156,7 @@ public class NodeGrid : MonoBehaviour
                     {
                         if ((x + y)%2 == 0) //check diagonal
                         {
-                            if (!nodes[checkX, centerNode.gridY].IsWalkable(layer) || !nodes[centerNode.gridX, checkY].IsWalkable(layer))
+                            if (nodes[checkX, centerNode.gridY].GetLevel(centerNode.layer, new Vector3Int(x, 0, 0)) != centerNode.layer || nodes[centerNode.gridX, checkY].GetLevel(centerNode.layer, new Vector3Int(0, y, 0)) != centerNode.layer)
                             {
                                 continue;
                             }

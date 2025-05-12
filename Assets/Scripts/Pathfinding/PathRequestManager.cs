@@ -22,9 +22,9 @@ public class PathRequestManager : MonoBehaviour
         public Vector3 pathStart;
         public int layer;
         public Vector3 pathEnd;
-        public Action<Vector3[], bool> callback;
+        public Action<Node[], bool> callback;
 
-        public PathRequest(Vector3 pathStart, int layer, Vector3 pathEnd, Action<Vector3[], bool> callback)
+        public PathRequest(Vector3 pathStart, int layer, Vector3 pathEnd, Action<Node[], bool> callback)
         {
             this.pathStart = pathStart;
             this.layer = layer;
@@ -33,7 +33,7 @@ public class PathRequestManager : MonoBehaviour
         }
     }
 
-    public static void RequestPath(Vector3 pathStart, int layer, Vector3 pathEnd, Action<Vector3[], bool> callback)
+    public static void RequestPath(Vector3 pathStart, int layer, Vector3 pathEnd, Action<Node[], bool> callback)
     {
         PathRequest newRequest = new PathRequest(pathStart, layer, pathEnd, callback);
         instance.requestQueue.Enqueue(newRequest);
@@ -51,7 +51,7 @@ public class PathRequestManager : MonoBehaviour
         }
     }
 
-    public void FinishedProcessingPath(Vector3[] path, bool wasSuccess)
+    public void FinishedProcessingPath(Node[] path, bool wasSuccess)
     {
         currRequest.callback(path, wasSuccess);
         isProcessing = false;

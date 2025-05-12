@@ -6,7 +6,7 @@ public class NPCController : MovementController
     [SerializeField] private float timeToMove = 0.4f;
     [SerializeField] private float timeToTurn = 0.1f;
     [SerializeField] private Transform target;
-    private Vector3[] path;
+    private Node[] path;
     private bool isBusy;
 
     private void Update()
@@ -18,7 +18,7 @@ public class NPCController : MovementController
         }
     }
 
-    private void OnPathFound(Vector3[] path, bool wasSuccess)
+    private void OnPathFound(Node[] path, bool wasSuccess)
     {
         if (wasSuccess)
         {
@@ -32,7 +32,8 @@ public class NPCController : MovementController
         for (int i = 0; i < path.Length; i++)
         {
             startPosition = transform.position;
-            targetPosition = path[i];
+            targetPosition = path[i].worldPosition;
+            targetPosition.z = 0;
 
             Vector3 pathDirection = targetPosition - startPosition;
             Vector3Int direction = new Vector3Int(Mathf.RoundToInt(pathDirection.x), Mathf.RoundToInt(pathDirection.y), 0);
@@ -66,6 +67,17 @@ public class NPCController : MovementController
 
             transform.position = targetPosition;
             lastDirection = direction;
+
+            layer = path[i].layer;
+
+            if ((layer - 1) % 3 != 0)
+            {
+                spriteRenderer.sortingOrder = layer - 4;
+            }
+            else
+            {
+                spriteRenderer.sortingOrder = layer - 5;
+            }
         }
 
         animator.PlayIdleAnimation(GetDirection(lastDirection));
@@ -79,11 +91,11 @@ public class NPCController : MovementController
         {
             for (int i = 0; i < path.Length; i++)
             {
-                Gizmos.DrawCube(path[i], Vector3.one * 0.25f);
+                Gizmos.DrawCube(path[i].worldPosition, Vector3.one * 0.25f);
 
                 if (i > 0)
                 {
-                    Gizmos.DrawLine(path[i - 1], path[i]);
+                    Gizmos.DrawLine(path[i - 1].worldPosition, path[i].worldPosition);
                 }
             }
         }

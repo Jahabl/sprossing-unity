@@ -9,6 +9,7 @@ public class Node : IHeapItem<Node>
     public int movementPenalty;
     public Node parent;
     private int heapIndex;
+    public int layer;
 
     public int gCost;
     public int hCost;
@@ -66,11 +67,11 @@ public class Node : IHeapItem<Node>
         {
             return layer;
         }
-        else if (direction.x == 0 && Math.Abs(layer - gridID) == 1)
+        else if (direction.x == 0 && Math.Abs(layer - gridID) == 1) //ramp
         {
             return gridID;
         }
-        else if (direction.x == 0 && gridID % (layer + 1) == 0)
+        else if (direction.x == 0 && gridID % (layer + 1) == 0) //ramp
         {
             return layer + 1;
         }

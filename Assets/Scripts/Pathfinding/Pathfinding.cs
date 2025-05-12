@@ -21,10 +21,11 @@ public class Pathfinding : MonoBehaviour
 
     IEnumerator FindPath(Vector3 startPosition, int layer, Vector3 targetPosition)
     {
-        Vector3[] waypoints = new Vector3[0];
+        Node[] waypoints = new Node[0];
         bool pathWasFound = false;
 
         Node startNode = nodes.GetNodeFromWorldPosition(startPosition);
+        startNode.layer = layer;
         Node targetNode = nodes.GetNodeFromWorldPosition(targetPosition);
 
         if (startPosition == targetPosition || startNode == null || targetNode == null)
@@ -49,9 +50,10 @@ public class Pathfinding : MonoBehaviour
                 break;
             }
 
-            foreach (Node neighbor in nodes.GetNeighbors(currentNode, layer))
+            foreach (Node neighbor in nodes.GetNeighbors(currentNode))
             {
-                if (!neighbor.IsWalkable(layer) || closedSet.Contains(neighbor))
+                int newLayer = neighbor.GetLevel(currentNode.layer, new Vector3Int(neighbor.gridX - currentNode.gridX, neighbor.gridY - currentNode.gridY, 0));
+                if (newLayer <= 0 || closedSet.Contains(neighbor))
                 {
                     continue;
                 }
@@ -63,6 +65,7 @@ public class Pathfinding : MonoBehaviour
                     neighbor.gCost = newCost;
                     neighbor.hCost = GetDistance(neighbor, targetNode);
                     neighbor.parent = currentNode;
+                    neighbor.layer = newLayer;
 
                     if (!openSet.Contains(neighbor))
                     {
@@ -89,20 +92,21 @@ public class Pathfinding : MonoBehaviour
 
     private int GetDistance(Node nodeA, Node nodeB)
     {
-        int distX = Math.Abs(nodeA.gridX - nodeB.gridX);
-        int distY = Math.Abs(nodeA.gridY - nodeB.gridY);
+        int deltaX = Math.Abs(nodeA.gridX - nodeB.gridX);
+        int deltaY = Math.Abs(nodeA.gridY - nodeB.gridY);
+        int deltaZ = Math.Abs(nodeA.layer - nodeB.layer);
 
-        if (distX > distY)
+        if (deltaX > deltaY)
         {
-            return 14 * distY + 10 * (distX -  distY);
+            return 14 * deltaY + 10 * (deltaX -  deltaY) + 5 * deltaZ;
         }
         else
         {
-            return 14 * distX + 10 * (distY -  distX);
+            return 14 * deltaX + 10 * (deltaY -  deltaX) + 5 * deltaZ;
         }
     }
 
-    private Vector3[] RetracePath(Node startNode, Node endNode)
+    private Node[] RetracePath(Node startNode, Node endNode)
     {
         List<Node> path = new List<Node>();
         Node currentNode = endNode;
@@ -115,13 +119,6 @@ public class Pathfinding : MonoBehaviour
 
         path.Reverse();
 
-        Vector3[] waypoints = new Vector3[path.Count];
-
-        for (int i = 0; i < path.Count; i++)
-        {
-            waypoints[i] = path[i].worldPosition;
-        }
-
-        return waypoints;
+        return path.ToArray();
     }
 }
