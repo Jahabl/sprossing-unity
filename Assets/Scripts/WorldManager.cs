@@ -492,5 +492,16 @@ public class WorldManager : MonoBehaviour
 
         GameObject newHouse = Instantiate(house, position, Quaternion.identity);
         newHouse.GetComponent<SpriteRenderer>().sortingOrder = layer - 5;
+
+        Vector3Int tilePosition = tilemaps[0].WorldToCell(position);
+
+        for (int x = -1; x <= 1; x++)
+        {
+            for (int y = 0; y <= 1; y++)
+            {
+                tilemaps[layer - 5].SetTile(tilePosition + new Vector3Int(x, y, 0), allTiles[1]);
+                nodeGrid.UpdateNodeInGrid(position + new Vector3(cellSize.x * x, cellSize.y * y, 0f), tilePosition + new Vector3Int(x, y, 0));
+            }
+        }
     }
 }
