@@ -5,6 +5,8 @@ public class NPCController : MovementController
 {
     [SerializeField] private float timeToMove = 0.4f;
     [SerializeField] private float timeToTurn = 0.1f;
+    [SerializeField] private float waitTime = 0.8f;
+    [SerializeField] private float radius = 7.5f;
     [SerializeField] private Transform target;
     private Node[] path;
     private bool isBusy;
@@ -14,7 +16,7 @@ public class NPCController : MovementController
         if (!isBusy)
         {
             isBusy = true;
-            PathRequestManager.RequestPath(transform.position, layer, target.position, OnPathFound);
+            PathRequestManager.RequestPath(transform.position, layer, worldManager.GetRandomPoint(transform.position, radius), OnPathFound);
         }
     }
 
@@ -24,6 +26,10 @@ public class NPCController : MovementController
         {
             this.path = path;
             StartCoroutine(FollowPath());
+        }
+        else
+        {
+            isBusy = false;
         }
     }
 
@@ -81,6 +87,10 @@ public class NPCController : MovementController
         }
 
         animator.PlayIdleAnimation(GetDirection(lastDirection));
+
+        yield return new WaitForSeconds(waitTime);
+
+        isBusy = false;
     }
 
     private void OnDrawGizmos()

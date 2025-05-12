@@ -1,11 +1,9 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class PlayerController : MovementController
 {
     [SerializeField] private Grid grid;
-    [SerializeField] private WorldManager worldManager;
     [SerializeField] private float timeToMove = 0.4f;
     [SerializeField] private float timeToTurn = 0.1f;
     private bool isMoving;

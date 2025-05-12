@@ -7,7 +7,7 @@ public class NodeGrid : MonoBehaviour
     [SerializeField] private Grid grid;
 
     public Node[,] nodes;
-    private Vector2Int gridSize;
+    public Vector2Int gridSize;
     private Vector3 bottomLeft;
     private Tilemap[] tilemaps;
 

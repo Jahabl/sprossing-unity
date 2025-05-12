@@ -504,4 +504,17 @@ public class WorldManager : MonoBehaviour
             }
         }
     }
+
+    public Vector3 GetRandomPoint(Vector3 currPosition, float radius)
+    {
+        Vector2 randomPos = Random.insideUnitCircle * radius + new Vector2(currPosition.x, currPosition.y);
+        Node randomNode = nodeGrid.GetNodeFromWorldPosition(new Vector3(randomPos.x, randomPos.y, 0f));
+
+        if (randomNode == null)
+        {
+            return currPosition;
+        }
+
+        return randomNode.worldPosition;
+    }
 }

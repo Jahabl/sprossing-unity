@@ -4274,6 +4274,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   grid: {fileID: 668675035}
+  gridSize: {x: 0, y: 0}
 --- !u!114 &366900601
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4493,7 +4494,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 7.5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -5075,6 +5076,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96dd02212067f49c19b8b718c78b913e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  worldManager: {fileID: 0}
   layer: 0
   timeToMove: 0.4
   timeToTurn: 0.1
@@ -6418,6 +6420,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96dd02212067f49c19b8b718c78b913e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  worldManager: {fileID: 0}
   layer: 0
   timeToMove: 0.4
   timeToTurn: 0.1
@@ -8500,6 +8503,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96dd02212067f49c19b8b718c78b913e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  worldManager: {fileID: 668675037}
   layer: 0
   timeToMove: 0.4
   timeToTurn: 0.1
@@ -9471,9 +9475,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70ab71ffd3e4c4eea8ae07ea26530cf1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  worldManager: {fileID: 668675037}
   layer: 0
   grid: {fileID: 668675035}
-  worldManager: {fileID: 668675037}
   timeToMove: 0.4
   timeToTurn: 0.1
 --- !u!4 &4523048290984978736

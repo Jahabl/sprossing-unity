@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class MovementController : MonoBehaviour
 {
+    [SerializeField] protected WorldManager worldManager;
+
     protected Vector3 startPosition;
     protected Vector3 targetPosition;
     public Vector3Int lastDirection  { get; protected set; }
