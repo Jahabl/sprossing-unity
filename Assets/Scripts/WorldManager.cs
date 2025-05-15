@@ -597,12 +597,17 @@ public class WorldManager : MonoBehaviour
         if (tilemaps[tileLayer + 2].GetTile<SeasonalRuleTile>(tilePosition) != null)
             return;
 
-        SeasonalRuleTile tile = tilemaps[tileLayer + 1].GetTile<SeasonalRuleTile>(tilePosition);
+        SeasonalRuleTile tile = tilemaps[tileLayer + 1].GetTile<SeasonalRuleTile>(tilePosition - direction);
+        if (tile != null && tile.tileType != TileType.Path)
+            return;
+
+        tile = tilemaps[tileLayer + 1].GetTile<SeasonalRuleTile>(tilePosition);
 
         if (tile == null)
         {
             tile = tilemaps[tileLayer].GetTile<SeasonalRuleTile>(tilePosition);
         }
+
 
         Vector3 cellSize = GetComponent<Grid>().cellSize;
 
@@ -665,8 +670,29 @@ public class WorldManager : MonoBehaviour
 
                     Debug.Log("Place Bridge");
                     break;
-                case TileType.Bridge: //remove ramp
-                    Debug.Log("Place Ramp");
+                case TileType.Bridge: //remove bridge
+                    for (int i = 1; i < 3; i++)
+                    {
+                        tile = tilemaps[tileLayer + 1].GetTile<SeasonalRuleTile>(tilePosition + direction * i);
+                        if (tile == null || tile.tileType != TileType.Bridge)
+                        {
+                            return;
+                        }
+                    }
+
+                    for (int i = 0; i < 3; i++)
+                    {
+                        tilemaps[tileLayer + 1].SetTile(tilePosition + direction * i, allTiles[2]);
+                        tilemaps[tileLayer].SetTile(tilePosition + direction * i, allTiles[1]);
+                        if (direction.x != 0)
+                        {
+                            tilemaps[tileLayer + 2].SetTile(tilePosition + direction * i + Vector3Int.down, null);
+                        }
+
+                        nodeGrid.UpdateNodeInGrid(position + new Vector3(direction.x * cellSize.x * i, 0f, 0f), tilePosition + direction * i);
+                    }
+
+                    Debug.Log("Remove Bridge");
                     break;
             }
         }
