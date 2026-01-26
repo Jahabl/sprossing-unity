@@ -657,6 +657,7 @@ public class WorldManager : MonoBehaviour
                             return;
                         }
 
+                        //compensate for player position (bottom)
                         if (direction.y < 0f)
                         {
                             bridge = Instantiate(bridge, position + (length / 2f - 1f) * cellSize.y * (Vector3)direction, Quaternion.identity, objectParent);

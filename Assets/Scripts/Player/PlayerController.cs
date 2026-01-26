@@ -65,6 +65,8 @@ public class PlayerController : MovementController
 
                 animator.PlayWalkAnimation(dir);
 
+                float moveTime = timeToMove * (targetPosition - startPosition).magnitude;
+
                 int targetLayer = worldManager.GetPositionLevel(targetPosition, layer, input);
 
                 if (targetLayer > 0)
@@ -79,9 +81,9 @@ public class PlayerController : MovementController
 
                             if (worldManager.GetPositionLevel(checkPosition, layer, Vector3Int.zero) == layer)
                             {
-                                while (elapsedTime < timeToMove * (targetPosition - startPosition).magnitude)
+                                while (elapsedTime < moveTime)
                                 {
-                                    transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / timeToMove);
+                                    transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / moveTime);
                                     elapsedTime += Time.deltaTime;
                                     yield return null;
                                 }
@@ -102,9 +104,9 @@ public class PlayerController : MovementController
                     }
                     else
                     {
-                        while (elapsedTime < timeToMove * (targetPosition - startPosition).magnitude)
+                        while (elapsedTime < moveTime)
                         {
-                            transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / timeToMove);
+                            transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / moveTime);
                             elapsedTime += Time.deltaTime;
                             yield return null;
                         }

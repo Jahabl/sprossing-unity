@@ -63,9 +63,11 @@ public class NPCController : MovementController
 
             animator.PlayWalkAnimation(dir);
 
-            while (elapsedTime < timeToMove * pathDirection.magnitude)
+            float moveTime = timeToMove * (targetPosition - startPosition).magnitude;
+
+            while (elapsedTime < moveTime)
             {
-                transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / timeToMove);
+                transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / moveTime);
                 elapsedTime += Time.deltaTime;
                 yield return null;
             }
