@@ -638,7 +638,9 @@ public class WorldManager : MonoBehaviour
                             }
                         }
 
-                        for (int i = 0; i < 3 - found / 3; i++)
+                        int length = 3 - found / 3;
+
+                        for (int i = 0; i < length; i++)
                         {
                             for (int w = 0; w < width; w++)
                             {
@@ -648,8 +650,22 @@ public class WorldManager : MonoBehaviour
                             }
                         }
 
-                        GameObject bridge = Resources.Load<GameObject>($"BridgeV{width}{3 - found / 3}");
-                        bridge = Instantiate(bridge, position + (3 - found / 3) / 3 * cellSize.y * 0.5f * (Vector3) direction, Quaternion.identity, objectParent);
+                        GameObject bridge = Resources.Load<GameObject>($"BridgeV{width}{length}");
+                        if (bridge == null)
+                        {
+                            Debug.Log($"BridgeV{width}{length}");
+                            return;
+                        }
+
+                        if (direction.y < 0f)
+                        {
+                            bridge = Instantiate(bridge, position + (length / 2f - 1f) * cellSize.y * (Vector3)direction, Quaternion.identity, objectParent);
+                        }
+                        else
+                        {
+                            bridge = Instantiate(bridge, position + length / 2f * cellSize.y * (Vector3)direction, Quaternion.identity, objectParent);
+                        }
+
                         bridge.GetComponent<SpriteRenderer>().sortingOrder = layer - 6;
                     }
                     else //left or right
@@ -684,6 +700,12 @@ public class WorldManager : MonoBehaviour
                         }
 
                         GameObject bridge = Resources.Load<GameObject>($"BridgeH{width}{3 - found / 3}");
+                        if (bridge == null)
+                        {
+                            Debug.Log($"BridgeV{width}{3 - found / 3}");
+                            return;
+                        }
+
                         bridge = Instantiate(bridge, position + (Vector3) direction * ((3 - found / 3) / 2f - cellSize.x * 0.5f), Quaternion.identity, objectParent);
                         bridge.GetComponent<SpriteRenderer>().sortingOrder = layer - 6;
                     }
