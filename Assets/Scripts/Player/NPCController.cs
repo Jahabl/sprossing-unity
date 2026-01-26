@@ -77,9 +77,9 @@ public class NPCController : MovementController
 
             layer = path[i].layer;
 
-            if ((layer - 1) % 3 != 0)
+            if ((layer - 1) % 3 != 0) //ramp
             {
-                spriteRenderer.sortingOrder = layer - 4;
+                spriteRenderer.sortingOrder = layer;
             }
             else
             {
