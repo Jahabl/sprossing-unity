@@ -3,7 +3,7 @@ using UnityEngine;
 
 public static class SaveManager
 {
-    private static string filePath = Application.persistentDataPath + "/testLevel.json";
+    private static readonly string filePath = Application.persistentDataPath + "/testLevel.json";
     public static void SaveData(SaveData saveData)
     {
         string json = JsonUtility.ToJson(saveData, true);
