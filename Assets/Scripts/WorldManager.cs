@@ -238,18 +238,6 @@ public class WorldManager : MonoBehaviour
                     }
                 }
             }
-            else if (structure.CompareTag("Bridge"))
-            {
-                for (int y = structure.bottomLeft.y; y < structure.bottomLeft.y + structure.size.y; y++)
-                {
-                    for (int x = structure.bottomLeft.x; x < structure.bottomLeft.x + structure.size.x; x++)
-                    {
-                        tilemaps[layer].SetTile(tilePosition + new Vector3Int(x, y, 0), allTiles[(int)TileType.Water]);
-                        tilemaps[layer - 1].SetTile(tilePosition + new Vector3Int(x, y, 0), allTiles[(int)TileType.Cliff]);
-                        nodeGrid.UpdateNodeInGrid(position + new Vector3(x, cellSize.y * y, 0f), tilePosition + new Vector3Int(x, y, 0));
-                    }
-                }
-            }
 
             Destroy(structure.gameObject);
         }
@@ -445,6 +433,11 @@ public class WorldManager : MonoBehaviour
 
         Vector3Int tilePosition = tilemaps[0].WorldToCell(position);
 
+        if (nodeGrid.IsOnBorder(tilePosition))
+        {
+            return;
+        }
+
         SeasonalRuleTile tile = tilemaps[tileLayer + 1].GetTile<SeasonalRuleTile>(tilePosition);
 
         if (tile == null)
@@ -455,6 +448,18 @@ public class WorldManager : MonoBehaviour
         if (tile == null || tilemaps[tileLayer + 2].GetTile<SeasonalRuleTile>(tilePosition) != null)
         {
             return;
+        }
+
+        for (int y = -1; y <= 1; y++)
+        {
+            for (int x = -1; x <= 1; x++)
+            {
+                SeasonalRuleTile test = tilemaps[tileLayer + 1].GetTile<SeasonalRuleTile>(tilePosition + new Vector3Int(x, y, 0));
+                if (test != null && test.tileType == TileType.Bridge)
+                {
+                    return;
+                }
+            }
         }
 
         switch (tile.tileType)
@@ -488,17 +493,35 @@ public class WorldManager : MonoBehaviour
                 if (invalidNeighbor)
                 {
                     SeasonalRuleTile tileA = tilemaps[tileLayer].GetTile<SeasonalRuleTile>(tilePosition + new Vector3Int(0, -1, 0));
-                    SeasonalRuleTile tileB = tilemaps[tileLayer - 2].GetTile<SeasonalRuleTile>(tilePosition + new Vector3Int(0, -1, 0));
-                    if (tileA != null || tileB == null || tileB.tileType != TileType.Cliff)
+                    if (tileA != null)
                     {
                         return;
                     }
-                    
+
+                    SeasonalRuleTile tileB;
+
+                    if (tileLayer > 2)
+                    {
+                        tileB = tilemaps[tileLayer - 2].GetTile<SeasonalRuleTile>(tilePosition + new Vector3Int(0, -1, 0));
+                        if (tileB == null || tileB.tileType != TileType.Cliff)
+                        {
+                            return;
+                        }
+                    }
+
                     tileA = tilemaps[tileLayer].GetTile<SeasonalRuleTile>(tilePosition + new Vector3Int(0, -2, 0));
-                    tileB = tilemaps[tileLayer - 3].GetTile<SeasonalRuleTile>(tilePosition + new Vector3Int(0, -2, 0));
-                    if (tileA != null || tileB == null || tileB.tileType != TileType.Grass)
+                    if (tileA != null)
                     {
                         return;
+                    }
+
+                    if (tileLayer > 3)
+                    {
+                        tileB = tilemaps[tileLayer - 3].GetTile<SeasonalRuleTile>(tilePosition + new Vector3Int(0, -2, 0));
+                        if (tileB == null || tileB.tileType != TileType.Grass)
+                        {
+                            return;
+                        }
                     }
 
                     tilemaps[tileLayer].SetTile(tilePosition, allTiles[(int)TileType.Cliff]);
@@ -712,154 +735,94 @@ public class WorldManager : MonoBehaviour
             return;
         }
 
-        SeasonalRuleTile tile = tilemaps[tileLayer + 1].GetTile<SeasonalRuleTile>(tilePosition - direction);
-        if (tile != null && tile.tileType != TileType.Path)
+        if (direction.x == 0) //up or down
         {
-            return;
-        }
+            int length = 0;
 
-        tile = tilemaps[tileLayer + 1].GetTile<SeasonalRuleTile>(tilePosition);
-
-        if (tile == null)
-        {
-            tile = tilemaps[tileLayer].GetTile<SeasonalRuleTile>(tilePosition);
-        }
-
-        if (tile != null)
-        {
-            if (tile.tileType == TileType.Water) //place bridge
+            for (int i = 0; i < 99; i++)
             {
-                int length = -1;
-
-                if (direction.x == 0) //up or down
+                int endFound = 0;
+                for (int x = -1; x <= width; x++)
                 {
-                    for (int w = -1; w <= width; w++)
+                    SeasonalRuleTile tile = tilemaps[tileLayer + 1].GetTile<SeasonalRuleTile>(tilePosition + new Vector3Int(x, direction.y * i, 0));
+                    if (tile == null)
                     {
-                        int temp = 0;
-                        for (int i = 0; i < 3; i++)
-                        {
-                            temp = i;
-                            
-                            tile = tilemaps[tileLayer + 1].GetTile<SeasonalRuleTile>(tilePosition + new Vector3Int(w, direction.y * i, 0));
-                            if (tile == null || (tile.tileType != TileType.Water && tile.tileType != TileType.Waterfall))
-                            {
-                                temp--;
-                                if (temp < 0)
-                                {
-                                    return;
-                                }
-
-                                break;
-                            }
-                        }
-
-                        if (temp < 1 || (length >= 0 && temp != length))
+                        endFound++;
+                    }
+                    else if (tile.tileType != TileType.Water && tile.tileType != TileType.Waterfall)
+                    {
+                        if (tile.tileType == TileType.Bridge)
                         {
                             return;
                         }
-                        else
-                        {
-                            length = temp;
-                        }
-                    }
 
-                    length++;
-
-                    tile = tilemaps[tileLayer + 1].GetTile<SeasonalRuleTile>(tilePosition + new Vector3Int(0, direction.y * length, 0));
-                    if (tile != null && tile.tileType != TileType.Path)
-                    {
-                        return;
+                        endFound++;
                     }
-
-                    Structure bridge = Resources.Load<Structure>($"BridgeV{width}{length}");
-                    if (bridge == null)
-                    {
-                        Debug.Log($"BridgeV{width}{length}");
-                        return;
-                    }
-
-                    for (int y = 0; y < length; y++)
-                    {
-                        for (int x = 0; x < width; x++)
-                        {
-                            tilemaps[tileLayer + 1].SetTile(tilePosition + new Vector3Int(x, direction.y * y, 0), null);
-                            tilemaps[tileLayer].SetTile(tilePosition + new Vector3Int(x, direction.y * y, 0), allTiles[(int)TileType.Grass]);
-                            nodeGrid.UpdateNodeInGrid(position + new Vector3(x, direction.y * cellSize.y * y, 0f), tilePosition + direction * y);
-                        }
-                    }
-
-                    //compensate for player position (bottom)
-                    if (direction.y < 0f)
-                    {
-                        bridge = Instantiate(bridge, position + (length / 2f - 1f) * cellSize.y * (Vector3)direction, Quaternion.identity, objectParent);
-                    }
-                    else
-                    {
-                        bridge = Instantiate(bridge, position + length / 2f * cellSize.y * (Vector3)direction, Quaternion.identity, objectParent);
-                    }
-
-                    bridge.GetComponent<SpriteRenderer>().sortingOrder = layer - 6;
                 }
-                else //left or right
+
+                if (endFound == 3)
                 {
-                    for (int w = -1; w <= width; w++)
-                    {
-                        int temp = 0;
-                        for (int i = 0; i < 3; i++)
-                        {
-                            temp = i;
-
-                            tile = tilemaps[tileLayer + 1].GetTile<SeasonalRuleTile>(tilePosition + new Vector3Int(direction.x * i, w, 0));
-                            if (tile == null || (tile.tileType != TileType.Water && tile.tileType != TileType.Waterfall))
-                            {
-                                temp--;
-                                if (temp < 0)
-                                {
-                                    return;
-                                }
-
-                                break;
-                            }
-                        }
-
-                        if (temp < 1 || (length >= 0 && temp != length))
-                        {
-                            return;
-                        }
-                        else
-                        {
-                            length = temp;
-                        }
-                    }
-
-                    length++;
-
-                    tile = tilemaps[tileLayer + 1].GetTile<SeasonalRuleTile>(tilePosition + new Vector3Int(direction.x * length, 0, 0));
-                    if (tile != null && tile.tileType != TileType.Path)
-                    {
-                        return;
-                    }
-
-                    Structure bridge = Resources.Load<Structure>($"BridgeH{width}{length}");
-                    if (bridge == null)
-                    {
-                        Debug.Log($"BridgeV{width}{length}");
-                        return;
-                    }
-
-                    for (int x = 0; x < width; x++)
-                    {
-                        for (int y = 0; y < length; y++)
-                        {
-                            tilemaps[tileLayer + 1].SetTile(tilePosition + new Vector3Int(direction.x * y, x, 0), null);
-                            tilemaps[tileLayer].SetTile(tilePosition + new Vector3Int(direction.x * y, x, 0), allTiles[(int)TileType.Grass]);
-                            nodeGrid.UpdateNodeInGrid(position + new Vector3(direction.x * cellSize.x * y, x, 0f), tilePosition + direction * y);
-                        }
-                    }
-
-                    bridge = Instantiate(bridge, position + (Vector3)direction * (length / 2f - cellSize.x * 0.5f), Quaternion.identity, objectParent);
-                    bridge.GetComponent<SpriteRenderer>().sortingOrder = layer - 6;
+                    length = i;
+                    break;
                 }
+                else if (endFound > 0)
+                {
+                    return;
+                }
+            }
+
+            for (int i = 0; i < length; i++)
+            {
+                tilemaps[tileLayer].SetTile(tilePosition + new Vector3Int(0, direction.y * i, 0), allTiles[(int)TileType.Grass]);
+                tilemaps[tileLayer + 1].SetTile(tilePosition + new Vector3Int(0, direction.y * i, 0), allTiles[(int)TileType.Bridge]);
+                nodeGrid.UpdateNodeInGrid(position + new Vector3(0, direction.y * cellSize.y * i, 0f), tilePosition + direction * i);
+            }
+        }
+        else
+        {
+            int length = 0;
+
+            for (int i = 0; i < 99; i++)
+            {
+                int endFound = 0;
+                for (int y = -1; y <= width; y++)
+                {
+                    SeasonalRuleTile tile = tilemaps[tileLayer + 1].GetTile<SeasonalRuleTile>(tilePosition + new Vector3Int(direction.x * i, y, 0));
+                    if (tile == null || (tile.tileType != TileType.Water && tile.tileType != TileType.Waterfall))
+                    {
+                        if (tile == null)
+                        {
+                            endFound++;
+                        }
+                        else if (tile.tileType != TileType.Water && tile.tileType != TileType.Waterfall)
+                        {
+                            if (tile.tileType == TileType.Bridge)
+                            {
+                                return;
+                            }
+
+                            endFound++;
+                        }
+                    }
+                }
+
+                if (endFound == 3)
+                {
+                    length = i;
+                    break;
+                }
+                else if (endFound > 0)
+                {
+                    return;
+                }
+            }
+
+            for (int i = 0; i < length; i++)
+            {
+                tilemaps[tileLayer].SetTile(tilePosition + new Vector3Int(direction.x * i, 0, 0), allTiles[(int)TileType.Grass]);
+                tilemaps[tileLayer + 1].SetTile(tilePosition + new Vector3Int(direction.x * i, 0, 0), allTiles[(int)TileType.Bridge]);
+                tilemaps[tileLayer + 2].SetTile(tilePosition + new Vector3Int(direction.x * i, -1, 0), allTiles[(int)TileType.Bridge]);
+                nodeGrid.UpdateNodeInGrid(position + new Vector3(direction.x * cellSize.x * i, 0f, 0f), tilePosition + direction * i);
             }
         }
     }
