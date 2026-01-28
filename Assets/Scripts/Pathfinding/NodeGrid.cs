@@ -250,7 +250,12 @@ public class NodeGrid : MonoBehaviour
 
     public bool IsOnBorder(Vector3Int tilePosition)
     {
-        if (Math.Abs(tilePosition.y) == gridSize.y / 2 - 1)
+        if (tilePosition.y == gridSize.y / -2 + 1)
+        {
+            return true;
+        }
+
+        if (tilePosition.y == gridSize.y / 2)
         {
             return true;
         }

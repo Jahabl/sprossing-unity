@@ -27,7 +27,7 @@ public class WorldManager : MonoBehaviour
         {
             //create world
             //set tiles
-            nodeGrid.GenerateGrid(new Vector2Int(20, 18));
+            nodeGrid.GenerateGrid(new Vector2Int(20, 19));
         }
     }
 
