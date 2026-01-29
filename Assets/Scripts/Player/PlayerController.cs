@@ -203,6 +203,6 @@ public class PlayerController : MovementController
             return;
         }
 
-        worldManager.PlaceBridge(transform.position + new Vector3(LastDirection.x * grid.cellSize.x, LastDirection.y * grid.cellSize.y, 0), layer, LastDirection, width);
+        worldManager.PlaceBridge(transform.position, layer, LastDirection, width);
     }
 }
