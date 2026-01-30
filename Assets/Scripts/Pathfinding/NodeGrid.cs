@@ -28,7 +28,7 @@ public class NodeGrid : MonoBehaviour
     public void GenerateGrid(Vector2Int gridSize)
     {
         this.gridSize = gridSize;
-        bottomLeft = new Vector3(-gridSize.x / 2f * grid.cellSize.x + grid.cellSize.x, (-gridSize.y + 1) / 2f * grid.cellSize.y, 0f);
+        bottomLeft = new Vector3(-gridSize.x / 2f * grid.cellSize.x + grid.cellSize.x, -gridSize.y / 2f * grid.cellSize.y, 0f);
 
         nodes = new Node[gridSize.x, gridSize.y];
         string temp = "";
@@ -257,12 +257,12 @@ public class NodeGrid : MonoBehaviour
 
     public bool IsOnBorder(Vector3Int tilePosition)
     {
-        if (tilePosition.y == gridSize.y / -2 + 1)
+        if (tilePosition.y == gridSize.y / -2)
         {
             return true;
         }
 
-        if (tilePosition.y == gridSize.y / 2)
+        if (tilePosition.y == gridSize.y / 2 - 1)
         {
             return true;
         }

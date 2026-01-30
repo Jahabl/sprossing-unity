@@ -25,7 +25,7 @@ public class WorldManager : MonoBehaviour
         }
         else
         {
-            Vector2Int gridSize = new Vector2Int(20, 19);
+            Vector2Int gridSize = new Vector2Int(20, 18);
             //create world
             //set tiles
             for (int y = 0; y < gridSize.y; y++)
@@ -34,12 +34,10 @@ public class WorldManager : MonoBehaviour
                 {
                     if (y == 0)
                     {
-                        tilemaps[0].SetTile(new Vector3Int(x - gridSize.x / 2, y - gridSize.y / 2, 0), allTiles[(int)TileType.Cliff]);
+                        tilemaps[0].SetTile(new Vector3Int(x - gridSize.x / 2, y - gridSize.y / 2 - 1, 0), allTiles[(int)TileType.Cliff]);
                     }
-                    else
-                    {
-                        tilemaps[0].SetTile(new Vector3Int(x - gridSize.x / 2, y - gridSize.y / 2, 0), allTiles[(int)TileType.Grass]);
-                    }
+
+                    tilemaps[0].SetTile(new Vector3Int(x - gridSize.x / 2, y - gridSize.y / 2, 0), allTiles[(int)TileType.Grass]);
                 }
             }
             
@@ -47,38 +45,35 @@ public class WorldManager : MonoBehaviour
         }
     }
 
-    private void Update()
+    public void ChangeSeason()
     {
-        /*if (Input.GetKeyUp(KeyCode.N))
+        Seasons newSeason = allTiles[(int)TileType.Grass].season;
+
+        switch (newSeason)
         {
-            Seasons newSeason = allTiles[(int)TileType.Grass].season;
+            case Seasons.Spring:
+                newSeason = Seasons.Summer;
+                break;
+            case Seasons.Summer:
+                newSeason = Seasons.Autumn;
+                break;
+            case Seasons.Autumn:
+                newSeason = Seasons.Winter;
+                break;
+            case Seasons.Winter:
+                newSeason = Seasons.Spring;
+                break;
+        }
 
-            switch (newSeason)
-            {
-                case Seasons.Spring:
-                    newSeason = Seasons.Summer;
-                    break;
-                case Seasons.Summer:
-                    newSeason = Seasons.Autumn;
-                    break;
-                case Seasons.Autumn:
-                    newSeason = Seasons.Winter;
-                    break;
-                case Seasons.Winter:
-                    newSeason = Seasons.Spring;
-                    break;
-            }
+        foreach (SeasonalRuleTile tile in allTiles)
+        {
+            tile.season = newSeason;
+        }
 
-            foreach (SeasonalRuleTile tile in allTiles)
-            {
-                tile.season = newSeason;
-            }
-
-            foreach (Tilemap map in tilemaps)
-            {
-                map.RefreshAllTiles();
-            }
-        }*/
+        foreach (Tilemap map in tilemaps)
+        {
+            map.RefreshAllTiles();
+        }
     }
 
     public void SaveMap()
@@ -355,7 +350,7 @@ public class WorldManager : MonoBehaviour
                     tilemaps[tileLayer + 1].SetTile(tilePosition, allTiles[(int)TileType.Cliff]);
                     tilemaps[tileLayer + 3].SetTile(tilePosition + Vector3Int.up, allTiles[(int)TileType.Grass]);
 
-                    nodeGrid.UpdateNodeInGrid(position + new Vector3(0f, GetComponent<Grid>().cellSize.y, 0f), tilePosition + Vector3Int.up);
+                    nodeGrid.UpdateNodeInGrid(position + new Vector3(0f, cellSize.y, 0f), tilePosition + Vector3Int.up);
                     nodeGrid.UpdateNodeInGrid(position, tilePosition);
 
                     break;
@@ -388,7 +383,7 @@ public class WorldManager : MonoBehaviour
                         tilemaps[tileLayer + 4].SetTile(tilePosition + Vector3Int.up, null); //remove overlay
                         tilemaps[tileLayer + 1].SetTile(tilePosition, null);
 
-                        nodeGrid.UpdateNodeInGrid(position + new Vector3(0f, GetComponent<Grid>().cellSize.y, 0f), tilePosition + Vector3Int.up);
+                        nodeGrid.UpdateNodeInGrid(position + new Vector3(0f, cellSize.y, 0f), tilePosition + Vector3Int.up);
                         nodeGrid.UpdateNodeInGrid(position, tilePosition);
                     }
 
@@ -416,7 +411,7 @@ public class WorldManager : MonoBehaviour
                 tilemaps[tileLayer + 1].SetTile(tilePosition - Vector3Int.up, allTiles[(int)TileType.Cliff]);
                 tilemaps[tileLayer + 3].SetTile(tilePosition, allTiles[(int)TileType.Grass]);
 
-                nodeGrid.UpdateNodeInGrid(position - new Vector3(0f, GetComponent<Grid>().cellSize.y, 0f), tilePosition - Vector3Int.up);
+                nodeGrid.UpdateNodeInGrid(position - new Vector3(0f, cellSize.y, 0f), tilePosition - Vector3Int.up);
                 nodeGrid.UpdateNodeInGrid(position, tilePosition);
             }
         }
@@ -528,7 +523,7 @@ public class WorldManager : MonoBehaviour
                     tilemaps[tileLayer + 1].SetTile(tilePosition, allTiles[(int)TileType.Waterfall]);
                     tilemaps[tileLayer - 2].SetTile(tilePosition + new Vector3Int(0, -1, 0), allTiles[(int)TileType.Waterfall]);
 
-                    nodeGrid.UpdateNodeInGrid(position - new Vector3(0f, GetComponent<Grid>().cellSize.y, 0f), tilePosition + new Vector3Int(0, -1, 0));
+                    nodeGrid.UpdateNodeInGrid(position - new Vector3(0f, cellSize.y, 0f), tilePosition + new Vector3Int(0, -1, 0));
                 }
                 else
                 {
@@ -568,7 +563,7 @@ public class WorldManager : MonoBehaviour
                             tilemaps[tileLayer].SetTile(tilePosition, allTiles[(int)TileType.Grass]);
                             tilemaps[tileLayer + 3].SetTile(tilePosition + Vector3Int.up, allTiles[(int)TileType.Cliff]);
 
-                            nodeGrid.UpdateNodeInGrid(position + new Vector3(0f, GetComponent<Grid>().cellSize.y, 0f), tilePosition + Vector3Int.up);
+                            nodeGrid.UpdateNodeInGrid(position + new Vector3(0f, cellSize.y, 0f), tilePosition + Vector3Int.up);
                         }
                     }
                 }
@@ -581,7 +576,7 @@ public class WorldManager : MonoBehaviour
                         tilemaps[tileLayer + 3].SetTile(tilePosition + Vector3Int.up, allTiles[(int)TileType.Grass]);
                         tilemaps[tileLayer + 4].SetTile(tilePosition + Vector3Int.up, null);
 
-                        nodeGrid.UpdateNodeInGrid(position + new Vector3(0f, GetComponent<Grid>().cellSize.y, 0f), tilePosition + Vector3Int.up);
+                        nodeGrid.UpdateNodeInGrid(position + new Vector3(0f, cellSize.y, 0f), tilePosition + Vector3Int.up);
                     }
                 }
 
@@ -630,7 +625,7 @@ public class WorldManager : MonoBehaviour
                         tilemaps[tileLayer + 1].SetTile(tilePosition + Vector3Int.up, allTiles[(int)TileType.Ramp]);
 
                         nodeGrid.UpdateNodeInGrid(position, tilePosition);
-                        nodeGrid.UpdateNodeInGrid(position + new Vector3(0f, GetComponent<Grid>().cellSize.y, 0f), tilePosition + Vector3Int.up);
+                        nodeGrid.UpdateNodeInGrid(position + new Vector3(0f, cellSize.y, 0f), tilePosition + Vector3Int.up);
                     }
 
                     break;
@@ -642,7 +637,7 @@ public class WorldManager : MonoBehaviour
                         tilemaps[tileLayer + 1].SetTile(tilePosition + Vector3Int.up, allTiles[(int)TileType.Cliff]);
 
                         nodeGrid.UpdateNodeInGrid(position, tilePosition);
-                        nodeGrid.UpdateNodeInGrid(position + new Vector3(0f, GetComponent<Grid>().cellSize.y, 0f), tilePosition + Vector3Int.up);
+                        nodeGrid.UpdateNodeInGrid(position + new Vector3(0f, cellSize.y, 0f), tilePosition + Vector3Int.up);
                     }
 
                     break;
@@ -659,7 +654,7 @@ public class WorldManager : MonoBehaviour
                     tilemaps[tileLayer - 2].SetTile(tilePosition, allTiles[(int)TileType.Ramp]);
                     tilemaps[tileLayer - 2].SetTile(tilePosition + Vector3Int.down, allTiles[(int)TileType.Ramp]);
 
-                    nodeGrid.UpdateNodeInGrid(position - new Vector3(0f, GetComponent<Grid>().cellSize.y, 0f), tilePosition + Vector3Int.down);
+                    nodeGrid.UpdateNodeInGrid(position - new Vector3(0f, cellSize.y, 0f), tilePosition + Vector3Int.down);
                     nodeGrid.UpdateNodeInGrid(position, tilePosition);
                 }
             }
