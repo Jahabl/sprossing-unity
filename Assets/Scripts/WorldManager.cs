@@ -701,19 +701,6 @@ public class WorldManager : MonoBehaviour
         }
     }
 
-    public Vector3 GetRandomPoint(Vector3 currPosition, float radius)
-    {
-        Vector2 randomPos = Random.insideUnitCircle * radius + new Vector2(currPosition.x, currPosition.y);
-        Node randomNode = nodeGrid.GetNodeFromWorldPosition(new Vector3(randomPos.x, randomPos.y, 0f));
-
-        if (randomNode == null)
-        {
-            return currPosition;
-        }
-
-        return randomNode.worldPosition;
-    }
-
     public void PlaceBridge(Vector3 position, int layer, Vector3Int direction, int width)
     {
         if ((layer - 1) % 3 != 0) //on ramp
@@ -883,6 +870,55 @@ public class WorldManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void PlaceFence(Vector3 position, int layer)
+    {
+        if ((layer - 1) % 3 != 0) //on ramp
+        {
+            return;
+        }
+
+        int tileLayer = layer - 7;
+
+        Vector3Int tilePosition = tilemaps[0].WorldToCell(position);
+
+        SeasonalRuleTile tile = tilemaps[tileLayer + 2].GetTile<SeasonalRuleTile>(tilePosition);
+        if (tile != null && tile.tileType == TileType.Fence) //remove fence
+        {
+            tilemaps[tileLayer + 2].SetTile(tilePosition, null);
+            nodeGrid.UpdateNodeInGrid(position, tilePosition);
+        }
+        else if (tile == null) //add fence
+        {
+            tile = tilemaps[tileLayer + 1].GetTile<SeasonalRuleTile>(tilePosition);
+            if (tile != null && tile.tileType != TileType.Path)
+            {
+                return;
+            }
+
+            tile = tilemaps[tileLayer].GetTile<SeasonalRuleTile>(tilePosition);
+            if (tile == null || tile.tileType != TileType.Grass)
+            {
+                return;
+            }
+
+            tilemaps[tileLayer + 2].SetTile(tilePosition, allTiles[(int)TileType.Fence]);
+            nodeGrid.UpdateNodeInGrid(position, tilePosition);
+        }
+    }
+
+    public Vector3 GetRandomPoint(Vector3 currPosition, float radius)
+    {
+        Vector2 randomPos = Random.insideUnitCircle * radius + new Vector2(currPosition.x, currPosition.y);
+        Node randomNode = nodeGrid.GetNodeFromWorldPosition(new Vector3(randomPos.x, randomPos.y, 0f));
+
+        if (randomNode == null)
+        {
+            return currPosition;
+        }
+
+        return randomNode.worldPosition;
     }
 
     public void ReturnToMenu()
