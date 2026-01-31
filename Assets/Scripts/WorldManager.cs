@@ -40,6 +40,8 @@ public class WorldManager : MonoBehaviour
                     tilemaps[0].SetTile(new Vector3Int(x - gridSize.x / 2, y - gridSize.y / 2, 0), allTiles[(int)TileType.Grass]);
                 }
             }
+
+            SetSeason(Seasons.Spring);
             
             nodeGrid.GenerateGrid(gridSize);
         }
@@ -65,9 +67,14 @@ public class WorldManager : MonoBehaviour
                 break;
         }
 
+        SetSeason(newSeason);
+    }
+
+    private void SetSeason(Seasons season)
+    {
         foreach (SeasonalRuleTile tile in allTiles)
         {
-            tile.season = newSeason;
+            tile.season = season;
         }
 
         foreach (Tilemap map in tilemaps)
@@ -78,13 +85,13 @@ public class WorldManager : MonoBehaviour
         foreach (Transform child in objectParent)
         {
             Structure structure = child.GetComponent<Structure>();
-            structure.ChangeSeason((int)newSeason);
+            structure.ChangeSeason((int)season);
         }
     }
 
     public void SaveMap()
     {
-        SaveData saveData = new SaveData(nodeGrid.gridSize, player);
+        SaveData saveData = new SaveData(nodeGrid.gridSize, player, (int)allTiles[(int)TileType.Grass].season);
 
         for (int i = 0; i < tilemaps.Length; i++)
         {
@@ -214,6 +221,8 @@ public class WorldManager : MonoBehaviour
             newHouse = Instantiate(newHouse, new Vector3(child.position[0], child.position[1], 0f), Quaternion.identity, objectParent);
             newHouse.SetLayer(child.layer);
         }
+
+        SetSeason((Seasons)saveData.season);
 
         nodeGrid.GenerateGrid(new Vector2Int(saveData.gridSize[0], saveData.gridSize[1]));
     }
@@ -706,7 +715,7 @@ public class WorldManager : MonoBehaviour
             for (int x = -1; x <= 1; x++)
             {
                 Node checkNode = nodeGrid.GetNodeFromWorldPosition(position + new Vector3(cellSize.x * x, cellSize.y * y, 0f));
-                if (checkNode.gridID != layer)
+                if (checkNode == null || checkNode.gridID != layer)
                 {
                     return false;
                 }
@@ -722,7 +731,7 @@ public class WorldManager : MonoBehaviour
 
         Structure house = Resources.Load<Structure>("House");
         house = Instantiate(house, position, Quaternion.identity, objectParent);
-        house.SetLayer(layer - 5);
+        house.SetupStructure(layer - 5, (int)allTiles[(int)TileType.Grass].season);
 
         for (int y = 0; y <= 1; y++)
         {
@@ -997,7 +1006,7 @@ public class WorldManager : MonoBehaviour
 
         Structure tree = Resources.Load<Structure>("Tree");
         tree = Instantiate(tree, position, Quaternion.identity, objectParent);
-        tree.SetLayer(layer - 5);
+        tree.SetupStructure(layer - 5, (int)allTiles[(int)TileType.Grass].season);
 
         tilemaps[tileLayer + 2].SetTile(tilePosition, allTiles[(int)TileType.Block]);
         nodeGrid.UpdateNodeInGrid(position, tilePosition);

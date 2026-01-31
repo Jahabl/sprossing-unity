@@ -20,6 +20,12 @@ public class Structure : MonoBehaviour
         }
     }
 
+    public void SetupStructure(int baseLayer, int season)
+    {
+        SetLayer(baseLayer);
+        ChangeSeason(season);
+    }
+
     public void ChangeSeason(int season)
     {
         if (libraryAssets.Length > 0)

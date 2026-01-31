@@ -14,6 +14,7 @@ public class MenuManager : MonoBehaviour
 
     public void NewGame()
     {
+        GlobalManager.singleton.saveData = null;
         GlobalManager.singleton.LoadScene("GameScene");
     }
 

@@ -5,6 +5,7 @@ using UnityEngine;
 public class SaveData
 {
     public int[] gridSize;
+    public int season;
 
     public List<SavedTile> layer0;
     public List<SavedTile> layer1;
@@ -21,7 +22,7 @@ public class SaveData
     public float[] playerPosition;
     public int[] playerDirection;
 
-    public SaveData(Vector2Int gridSize, PlayerController player)
+    public SaveData(Vector2Int gridSize, PlayerController player, int season)
     {
         this.gridSize = new int[2];
         this.gridSize[0] = gridSize.x;
@@ -38,5 +39,7 @@ public class SaveData
         playerDirection[0] = player.LastDirection.x;
         playerDirection[1] = player.LastDirection.y;
         playerDirection[2] = player.layer;
+
+        this.season = season;
     }
 }
