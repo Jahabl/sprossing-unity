@@ -20,24 +20,27 @@ public class WorldManager : MonoBehaviour
 
         if (GlobalManager.singleton.saveData != null)
         {
-            ClearMap();
+            ClearMap(GlobalManager.singleton.saveData);
             LoadMap(GlobalManager.singleton.saveData);
         }
         else
         {
-            Vector2Int gridSize = new Vector2Int(80, 64);
+            Vector2Int gridSize = new Vector2Int(GlobalManager.singleton.gridWidth, GlobalManager.singleton.gridHeight);
             //create world
             //set tiles
             for (int y = 0; y < gridSize.y; y++)
             {
                 for (int x = 0; x < gridSize.x; x++)
                 {
-                    if (y == 0)
+                    if (y == 0 || x == 0 || y == gridSize.y - 1 || x == gridSize.x - 1)
                     {
-                        tilemaps[0].SetTile(new Vector3Int(x - gridSize.x / 2, y - gridSize.y / 2 - 1, 0), allTiles[(int)TileType.Cliff]);
+                        tilemaps[0].SetTile(new Vector3Int(x - gridSize.x / 2, y - gridSize.y / 2, 0), allTiles[(int)TileType.Cliff]);
                     }
-
-                    tilemaps[0].SetTile(new Vector3Int(x - gridSize.x / 2, y - gridSize.y / 2, 0), allTiles[(int)TileType.Grass]);
+                    else
+                    {
+                        tilemaps[0].SetTile(new Vector3Int(x - gridSize.x / 2, y - gridSize.y / 2, 0), allTiles[(int)TileType.Grass]);
+                        tilemaps[1].SetTile(new Vector3Int(x - gridSize.x / 2, y - gridSize.y / 2, 0), null);
+                    }
                 }
             }
 
@@ -156,17 +159,20 @@ public class WorldManager : MonoBehaviour
         SaveManager.SaveData(saveData);
     }
 
-    private void ClearMap()
+    private void ClearMap(SaveData saveData)
     {
-        foreach (Tilemap tilemap in tilemaps)
-        {
-            tilemap.ClearAllTiles();
-        }
+        Vector2Int gridSize = new Vector2Int(saveData.gridSize[0], saveData.gridSize[1]);
 
-        foreach (Transform child in objectParent)
-        {
-            Destroy(child.gameObject);
-        }
+        for (int y = 0; y < gridSize.y; y++)
+            {
+                for (int x = 0; x < gridSize.x; x++)
+                {
+                    if (y != 0 && x != 0 && y != gridSize.y - 1 && x != gridSize.x - 1)
+                    {
+                        tilemaps[1].SetTile(new Vector3Int(x - gridSize.x / 2, y - gridSize.y / 2, 0), null);
+                    }
+                }
+            }
     }
 
     private void LoadMap(SaveData saveData)
@@ -791,7 +797,7 @@ public class WorldManager : MonoBehaviour
             {
                 int length = 0;
 
-                for (int i = 1; i < 99; i++)
+                for (int i = 1; i < 9; i++)
                 {
                     int endFound = 0;
                     for (int x = -1; x <= width; x++)
@@ -823,6 +829,11 @@ public class WorldManager : MonoBehaviour
                     }
                 }
 
+                if (length == 0)
+                {
+                    return false;
+                }
+
                 for (int i = 1; i <= length; i++)
                 {
                     tilemaps[tileLayer].SetTile(tilePosition + new Vector3Int(0, direction.y * i, 0), allTiles[(int)TileType.Grass]);
@@ -832,7 +843,7 @@ public class WorldManager : MonoBehaviour
             } //remove bridge
             else
             {
-                for (int i = 1; i < 99; i++)
+                for (int i = 1; i < 9; i++)
                 {
                     tile = tilemaps[tileLayer + 1].GetTile<SeasonalRuleTile>(tilePosition + new Vector3Int(0, direction.y * i, 0));
 
@@ -853,7 +864,7 @@ public class WorldManager : MonoBehaviour
             {
                 int length = 0;
 
-                for (int i = 1; i < 99; i++)
+                for (int i = 1; i < 9; i++)
                 {
                     int endFound = 0;
                     for (int y = -1; y <= width; y++)
@@ -888,6 +899,11 @@ public class WorldManager : MonoBehaviour
                     }
                 }
 
+                if (length == 0)
+                {
+                    return false;
+                }
+
                 for (int i = 1; i < length; i++)
                 {
                     tilemaps[tileLayer].SetTile(tilePosition + new Vector3Int(direction.x * i, 0, 0), allTiles[(int)TileType.Grass]);
@@ -898,7 +914,7 @@ public class WorldManager : MonoBehaviour
             } //remove bridge
             else
             {
-                for (int i = 1; i < 99; i++)
+                for (int i = 1; i < 9; i++)
                 {
                     tile = tilemaps[tileLayer + 1].GetTile<SeasonalRuleTile>(tilePosition + new Vector3Int(direction.x * i, 0, 0));
 

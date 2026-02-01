@@ -7,6 +7,11 @@ public class GlobalManager : MonoBehaviour
     public static GlobalManager singleton;
     public SaveData saveData;
 
+    [Range(4, 80)]
+    public int gridWidth = 80;
+    [Range(4, 64)]
+    public int gridHeight = 64;
+
     private void Start()
     {
         DontDestroyOnLoad(this);
