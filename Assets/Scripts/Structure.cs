@@ -12,11 +12,18 @@ public class Structure : MonoBehaviour
     {
         GetComponent<SpriteRenderer>().sortingOrder = baseLayer;
 
-        int childIndex = 0;
-        foreach (Transform child in transform)
+        int childCount = transform.childCount;
+
+        for (int i = 0; i < childCount; i++)
         {
-            child.GetComponent<SpriteRenderer>().sortingOrder = baseLayer + childIndex * 4;
-            childIndex++;
+            if (i == childCount - 1)
+            {
+                transform.GetChild(i).GetComponent<SpriteRenderer>().sortingOrder = baseLayer + 4;
+            }
+            else
+            {
+                transform.GetChild(i).GetComponent<SpriteRenderer>().sortingOrder = baseLayer;
+            }
         }
     }
 
