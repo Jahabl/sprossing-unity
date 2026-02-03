@@ -9,6 +9,7 @@ public class WorldManager : MonoBehaviour
 
     [SerializeField] private SeasonalRuleTile[] allTiles;
     [SerializeField] private Transform objectParent;
+    private Dictionary<Vector3, Structure> structures;
 
     private Tilemap[] tilemaps;
     private Vector3 cellSize;
@@ -17,6 +18,8 @@ public class WorldManager : MonoBehaviour
     {
         tilemaps = transform.GetComponentsInChildren<Tilemap>();
         cellSize = GetComponent<Grid>().cellSize;
+
+        structures = new Dictionary<Vector3, Structure>();
 
         if (GlobalManager.singleton.saveData != null)
         {
@@ -164,15 +167,15 @@ public class WorldManager : MonoBehaviour
         Vector2Int gridSize = new Vector2Int(saveData.gridSize[0], saveData.gridSize[1]);
 
         for (int y = 0; y < gridSize.y; y++)
+        {
+            for (int x = 0; x < gridSize.x; x++)
             {
-                for (int x = 0; x < gridSize.x; x++)
+                if (y != 0 && x != 0 && y != gridSize.y - 1 && x != gridSize.x - 1)
                 {
-                    if (y != 0 && x != 0 && y != gridSize.y - 1 && x != gridSize.x - 1)
-                    {
-                        tilemaps[1].SetTile(new Vector3Int(x - gridSize.x / 2, y - gridSize.y / 2, 0), null);
-                    }
+                    tilemaps[1].SetTile(new Vector3Int(x - gridSize.x / 2, y - gridSize.y / 2, 0), null);
                 }
             }
+        }
     }
 
     private void LoadMap(SaveData saveData)
@@ -223,9 +226,11 @@ public class WorldManager : MonoBehaviour
 
         foreach (SavedObject child in saveData.objects)
         {
-            Structure newHouse = Resources.Load<Structure>($"{child.prefabName}");
-            newHouse = Instantiate(newHouse, new Vector3(child.position[0], child.position[1], 0f), Quaternion.identity, objectParent);
-            newHouse.SetLayer(child.layer);
+            Structure structure = Resources.Load<Structure>($"{child.prefabName}");
+            structure = Instantiate(structure, new Vector3(child.position[0], child.position[1], 0f), Quaternion.identity, objectParent);
+            structure.SetLayer(child.layer);
+
+            structures.Add(structure.transform.position, structure);
         }
 
         SetSeason((Seasons)saveData.season);
@@ -233,9 +238,56 @@ public class WorldManager : MonoBehaviour
         nodeGrid.GenerateGrid(new Vector2Int(saveData.gridSize[0], saveData.gridSize[1]));
     }
 
-    public void RemoveStructures()
+    public bool RemoveStructure(Vector3 position, int layer)
     {
-        for (int i = 0; i < objectParent.transform.childCount; i++)
+        if (!structures.ContainsKey(position))
+        {
+            return false;
+        }
+
+        if ((layer - 1) % 3 != 0) //on ramp
+        {
+            return false;
+        }
+
+        Structure structure = structures[position];
+
+        if (structure != null)
+        {
+            if (layer != structure.GetComponent<SpriteRenderer>().sortingOrder + 5)
+            {
+                return false;
+            }
+            else
+            {
+                Vector3Int tilePosition = tilemaps[0].WorldToCell(position);
+
+                if (structure.CompareTag("House"))
+                {
+                    for (int y = structure.bottomLeft.y; y < structure.bottomLeft.y + structure.size.y; y++)
+                    {
+                        for (int x = structure.bottomLeft.x; x < structure.bottomLeft.x + structure.size.x; x++)
+                        {
+                            tilemaps[layer - 5].SetTile(tilePosition + new Vector3Int(x, y, 0), null);
+                            nodeGrid.UpdateNodeInGrid(position + new Vector3(cellSize.x * x, cellSize.y * y, 0f), tilePosition + new Vector3Int(x, y, 0));
+                        }
+                    }
+                }
+                else
+                {
+                    tilemaps[layer - 5].SetTile(tilePosition, null);
+                    nodeGrid.UpdateNodeInGrid(position, tilePosition);
+                }
+
+                structures.Remove(position);
+                Destroy(structure.gameObject);
+
+                return true;
+            }
+        }
+
+        return false;
+        /*for (int i = 0; i < objectParent.transform.childCount; i++)
         {
             Structure structure = objectParent.GetChild(i).GetComponent<Structure>();
             Vector3 position = objectParent.GetChild(i).position;
@@ -261,7 +313,7 @@ public class WorldManager : MonoBehaviour
             }
 
             Destroy(structure.gameObject);
-        }
+        }*/
     }
 
     public int GetPositionLevel(Vector3 position, int layer, Vector3Int direction)
@@ -739,6 +791,8 @@ public class WorldManager : MonoBehaviour
         house = Instantiate(house, position, Quaternion.identity, objectParent);
         house.SetupStructure(layer - 5, (int)allTiles[(int)TileType.Grass].season);
 
+        structures.Add(house.transform.position, house);
+
         for (int y = 0; y <= 1; y++)
         {
             for (int x = -1; x <= 1; x++)
@@ -1023,6 +1077,8 @@ public class WorldManager : MonoBehaviour
         Structure tree = Resources.Load<Structure>("Tree");
         tree = Instantiate(tree, position, Quaternion.identity, objectParent);
         tree.SetupStructure(layer - 5, (int)allTiles[(int)TileType.Grass].season);
+        
+        structures.Add(tree.transform.position, tree);
 
         tilemaps[tileLayer + 2].SetTile(tilePosition, allTiles[(int)TileType.Block]);
         nodeGrid.UpdateNodeInGrid(position, tilePosition);

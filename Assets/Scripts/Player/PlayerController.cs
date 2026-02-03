@@ -296,4 +296,22 @@ public class PlayerController : MovementController
             EnableBubble();
         }
     }
+
+    public void RemoveStructure()
+    {
+        bool wasSuccess;
+        if (LastDirection.x != 0 && LastDirection.y != 0) //can't be on diagonal
+        {
+            wasSuccess = false;
+        }
+        else
+        {
+            wasSuccess = worldManager.RemoveStructure(transform.position + new Vector3(LastDirection.x * grid.cellSize.x, LastDirection.y * grid.cellSize.y, 0), layer);
+        }
+
+        if (!wasSuccess)
+        {
+            EnableBubble();
+        }
+    }
 }

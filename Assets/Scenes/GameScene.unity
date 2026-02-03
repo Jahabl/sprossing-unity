@@ -1519,7 +1519,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c93fc305e3a1648bdaef1e6cb126d045, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridSize: {x: 80, y: 64}
   player: {fileID: 4152616669548906935}
   nodeGrid: {fileID: 668675038}
   allTiles:
@@ -90115,7 +90114,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 4
-      m_TileSpriteIndex: 13
+      m_TileSpriteIndex: 15
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -91078,12 +91077,12 @@ Tilemap:
     m_Data: {fileID: 0}
   - m_RefCount: 0
     m_Data: {fileID: 0}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
   - m_RefCount: 1
     m_Data: {fileID: -1915654267, guid: 4bfe9da48c2614fa4803c99d10324cea, type: 3}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
   - m_RefCount: 1
     m_Data: {fileID: -608036253, guid: 4bfe9da48c2614fa4803c99d10324cea, type: 3}
   - m_RefCount: 1
@@ -92212,9 +92211,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 668675037}
-        m_TargetAssemblyTypeName: WorldManager, Assembly-CSharp
-        m_MethodName: RemoveStructures
+      - m_Target: {fileID: 4152616669548906935}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: RemoveStructure
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
