@@ -7,11 +7,14 @@ public class PlayerController : MovementController
     [SerializeField] private Grid grid;
     [SerializeField] private float timeToMove = 0.4f;
     [SerializeField] private float timeToTurn = 0.1f;
-    private bool isMoving;
+
     private bool isButtonDown;
     private Vector3Int input;
 
     [SerializeField] private SpriteRenderer bubble;
+
+    private string lastAction = "";
+    private string state = "Neutral";
 
     protected override void SetSortingOrder(int layer)
     {
@@ -21,10 +24,103 @@ public class PlayerController : MovementController
 
     private void Update()
     {
-        if (!isMoving && isButtonDown)
+        switch (state)
         {
-            StopCoroutine("MovePlayer");
-            StartCoroutine("MovePlayer");
+            case "Pathing":
+                if (isButtonDown)
+                {
+                    if (!isBusy && lastAction != "Pathing")
+                    {
+                        lastAction = "Pathing";
+                        Pathing();
+                    }
+                    else if (!isBusy)
+                    {
+                        lastAction = "Moving";
+                        StartCoroutine(MovePlayer(false));
+                    }
+                }
+                else
+                {
+                    if (!isBusy && lastAction != "Pathing")
+                    {
+                        lastAction = "Pathing";
+                        Pathing();
+                    }
+                    else if (!isBusy)
+                    {
+                        animator.PlayIdleAnimation(GetDirection(LastDirection));
+                    }
+                }
+
+                break;
+            case "Terraforming":
+                if (isButtonDown)
+                {
+                    if (!isBusy && lastAction != "Terraforming")
+                    {
+                        lastAction = "Terraforming";
+                        Terraform();
+                    }
+                    else if (!isBusy)
+                    {
+                        lastAction = "Moving";
+                        StartCoroutine(MovePlayer(false));
+                    }
+                }
+                else
+                {
+                    if (!isBusy && lastAction != "Terraforming")
+                    {
+                        lastAction = "Terraforming";
+                        Terraform();
+                    }
+                    else if (!isBusy)
+                    {
+                        animator.PlayIdleAnimation(GetDirection(LastDirection));
+                    }
+                }
+
+                break;
+            case "Waterscaping":
+                if (isButtonDown)
+                {
+                    if (!isBusy && lastAction != "Waterscaping")
+                    {
+                        lastAction = "Waterscaping";
+                        Waterscape();
+                    }
+                    else if (!isBusy)
+                    {
+                        lastAction = "Moving";
+                        StartCoroutine(MovePlayer(false));
+                    }
+                }
+                else
+                {
+                    if (!isBusy && lastAction != "Waterscaping")
+                    {
+                        lastAction = "Waterscaping";
+                        Waterscape();
+                    }
+                    else if (!isBusy)
+                    {
+                        animator.PlayIdleAnimation(GetDirection(LastDirection));
+                    }
+                }
+
+                break;
+            default:
+                if (!isBusy && isButtonDown)
+                {
+                    StartCoroutine(MovePlayer(true));
+                }
+                else if (!isBusy)
+                {
+                    animator.PlayIdleAnimation(GetDirection(LastDirection));
+                }
+
+                break;
         }
     }
 
@@ -43,25 +139,45 @@ public class PlayerController : MovementController
         }
     }
 
-    private IEnumerator MovePlayer()
+    private IEnumerator MovePlayer(bool canTurn)
     {
-        isMoving = true;
+        Vector3Int currInput = input;
 
-        while (isButtonDown)
+        isBusy = true;
+
+        string dir = GetDirection(currInput);
+        bool hasMoved = false;
+
+        if (currInput != LastDirection) //turn first
         {
-            string dir = GetDirection(input);
+            //https://discussions.unity.com/t/vector2-angle-how-do-i-get-if-its-cw-or-ccw/101180/5
+            bool clockwise = Mathf.Sign(LastDirection.x * currInput.y - LastDirection.y * currInput.x) <= 0;
+            int nrOfTurns = Mathf.RoundToInt(Vector3.Angle(currInput, LastDirection) / 45f);
 
-            if (input != LastDirection) //turn first
+            Debug.Log(nrOfTurns);
+
+            if (!canTurn)
             {
-                //https://discussions.unity.com/t/vector2-angle-how-do-i-get-if-its-cw-or-ccw/101180/5
-                bool clockwise = Mathf.Sign(LastDirection.x * input.y - LastDirection.y * input.x) <= 0;
-                int nrOfTurns = Mathf.RoundToInt(Vector3.Angle(input, LastDirection) / 45f);
+                if (nrOfTurns != 4)
+                {
+                    isBusy = false;
+                    lastAction = state;
+                    animator.PlayIdleAnimation(GetDirection(LastDirection));
 
+                    yield break;
+                }
+                else
+                {
+                    dir = GetDirection(LastDirection);
+                }
+            }
+            else
+            {
                 string[] turns = GetTurns(GetDirection(LastDirection), nrOfTurns, clockwise);
 
-                if (input.x != 0 || input.y != 0)
+                if (currInput.x != 0 || currInput.y != 0)
                 {
-                    LastDirection = input;
+                    LastDirection = currInput;
                 }
 
                 for (int i = 0; i < nrOfTurns; i++)
@@ -69,75 +185,80 @@ public class PlayerController : MovementController
                     animator.PlayTurnAnimation(turns[i]);
                     yield return new WaitForSeconds(timeToTurn);
                 }
+
+                hasMoved = true;
             }
-            else
+        }
+        
+        if (!hasMoved)
+        {
+            float elapsedTime = 0f;
+
+            Vector3Int gridPosition = grid.WorldToCell(transform.position);
+
+            startPosition = transform.position;
+            targetPosition = grid.CellToWorld(gridPosition + currInput);
+
+            animator.PlayWalkAnimation(dir);
+
+            float moveTime = timeToMove * (targetPosition - startPosition).magnitude;
+
+            int targetLayer = worldManager.GetPositionLevel(targetPosition, layer, currInput);
+
+            if (targetLayer > 0)
             {
-                float elapsedTime = 0f;
-
-                Vector3Int gridPosition = grid.WorldToCell(transform.position);
-
-                startPosition = transform.position;
-                targetPosition = grid.CellToWorld(gridPosition + input);
-
-                animator.PlayWalkAnimation(dir);
-
-                float moveTime = timeToMove * (targetPosition - startPosition).magnitude;
-
-                int targetLayer = worldManager.GetPositionLevel(targetPosition, layer, input);
-
-                if (targetLayer > 0)
+                if (currInput.x != 0 && currInput.y != 0) //diagonal movement
                 {
-                    if (input.x != 0 && input.y != 0) //diagonal movement
+                    Vector3 checkPosition = grid.CellToWorld(gridPosition + new Vector3Int(currInput.x, 0, 0));
+
+                    if (worldManager.GetPositionLevel(checkPosition, layer, Vector3Int.zero) == layer)
                     {
-                        Vector3 checkPosition = grid.CellToWorld(gridPosition + new Vector3Int(input.x, 0, 0));
+                        checkPosition = grid.CellToWorld(gridPosition + new Vector3Int(0, currInput.y, 0));
 
                         if (worldManager.GetPositionLevel(checkPosition, layer, Vector3Int.zero) == layer)
                         {
-                            checkPosition = grid.CellToWorld(gridPosition + new Vector3Int(0, input.y, 0));
-
-                            if (worldManager.GetPositionLevel(checkPosition, layer, Vector3Int.zero) == layer)
+                            while (elapsedTime < moveTime)
                             {
-                                while (elapsedTime < moveTime)
-                                {
-                                    transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / moveTime);
-                                    elapsedTime += Time.deltaTime;
-                                    yield return null;
-                                }
-
-                                transform.position = targetPosition;
-                                layer = targetLayer;
-
-                                SetSortingOrder(layer);
+                                transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / moveTime);
+                                elapsedTime += Time.deltaTime;
+                                yield return null;
                             }
-                        }
-                    }
-                    else
-                    {
-                        while (elapsedTime < moveTime)
-                        {
-                            transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / moveTime);
-                            elapsedTime += Time.deltaTime;
-                            yield return null;
-                        }
 
-                        transform.position = targetPosition;
-                        layer = targetLayer;
+                            transform.position = targetPosition;
+                            layer = targetLayer;
 
-                        SetSortingOrder(layer);
+                            SetSortingOrder(layer);
+                        }
                     }
                 }
-
-                if (input.x != 0 || input.y != 0)
+                else
                 {
-                    LastDirection = input;
+                    while (elapsedTime < moveTime)
+                    {
+                        transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / moveTime);
+                        elapsedTime += Time.deltaTime;
+                        yield return null;
+                    }
+
+                    transform.position = targetPosition;
+                    layer = targetLayer;
+
+                    SetSortingOrder(layer);
                 }
             }
 
-            yield return null;
+            if (canTurn)
+            {
+                if (currInput.x != 0 || currInput.y != 0)
+                {
+                    LastDirection = currInput;
+                }
+            }
         }
 
-        animator.PlayIdleAnimation(GetDirection(LastDirection));
-        isMoving = false;
+        yield return null;
+
+        isBusy = false;
     }
 
     private void EnableBubble()
@@ -155,6 +276,8 @@ public class PlayerController : MovementController
 
     public void Pathing()
     {
+        isBusy = true;
+
         bool wasSuccess;
         if (LastDirection.x != 0 && LastDirection.y != 0) //can't be on diagonal
         {
@@ -165,6 +288,8 @@ public class PlayerController : MovementController
             wasSuccess = worldManager.Pathing(transform.position + new Vector3(LastDirection.x * grid.cellSize.x, LastDirection.y * grid.cellSize.y, 0), layer);
         }
 
+        isBusy = false;
+
         if (!wasSuccess)
         {
             EnableBubble();
@@ -173,6 +298,8 @@ public class PlayerController : MovementController
 
     public void Terraform()
     {
+        isBusy = true;
+
         bool wasSuccess;
         if (LastDirection.x != 0 && LastDirection.y != 0) //can't be on diagonal
         {
@@ -183,6 +310,8 @@ public class PlayerController : MovementController
             wasSuccess = worldManager.Terraform(transform.position + new Vector3(LastDirection.x * grid.cellSize.x, LastDirection.y * grid.cellSize.y, 0), layer);
         }
 
+        isBusy = false;
+
         if (!wasSuccess)
         {
             EnableBubble();
@@ -191,6 +320,8 @@ public class PlayerController : MovementController
 
     public void Waterscape()
     {
+        isBusy = true;
+
         bool wasSuccess;
         if (LastDirection.x != 0 && LastDirection.y != 0) //can't be on diagonal
         {
@@ -201,16 +332,28 @@ public class PlayerController : MovementController
             wasSuccess = worldManager.Waterscape(transform.position + new Vector3(LastDirection.x * grid.cellSize.x, LastDirection.y * grid.cellSize.y, 0), layer);
         }
 
+        isBusy = false;
+
         if (!wasSuccess)
         {
             EnableBubble();
         }
     }
 
+    public void ChangeState(string state)
+    {
+        this.state = state;
+        lastAction = "";
+    }
+
     public void PlaceRamp()
     {
         bool wasSuccess;
         if (LastDirection.x != 0) //not facing right direction
+        {
+            wasSuccess = false;
+        }
+        else if (isBusy)
         {
             wasSuccess = false;
         }
@@ -232,6 +375,10 @@ public class PlayerController : MovementController
         {
             wasSuccess = false;
         }
+        else if (isBusy)
+        {
+            wasSuccess = false;
+        }
         else
         {
             wasSuccess = worldManager.PlaceHouse(transform.position + new Vector3(LastDirection.x * grid.cellSize.x, LastDirection.y * grid.cellSize.y, 0), layer);
@@ -247,6 +394,10 @@ public class PlayerController : MovementController
     {
         bool wasSuccess;
         if (LastDirection.x != 0 && LastDirection.y != 0) //can't be on diagonal
+        {
+            wasSuccess = false;
+        }
+        else if (isBusy)
         {
             wasSuccess = false;
         }
@@ -268,6 +419,10 @@ public class PlayerController : MovementController
         {
             wasSuccess = false;
         }
+        else if (isBusy)
+        {
+            wasSuccess = false;
+        }
         else
         {
             wasSuccess = worldManager.PlaceFence(transform.position + new Vector3(LastDirection.x * grid.cellSize.x, LastDirection.y * grid.cellSize.y, 0), layer);
@@ -286,6 +441,10 @@ public class PlayerController : MovementController
         {
             wasSuccess = false;
         }
+        else if (isBusy)
+        {
+            wasSuccess = false;
+        }
         else
         {
             wasSuccess = worldManager.PlaceTree(transform.position + new Vector3(LastDirection.x * grid.cellSize.x, LastDirection.y * grid.cellSize.y, 0), layer);
@@ -301,6 +460,10 @@ public class PlayerController : MovementController
     {
         bool wasSuccess;
         if (LastDirection.x != 0 && LastDirection.y != 0) //can't be on diagonal
+        {
+            wasSuccess = false;
+        }
+        else if (isBusy)
         {
             wasSuccess = false;
         }

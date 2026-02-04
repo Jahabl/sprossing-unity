@@ -8,7 +8,6 @@ public class NPCController : MovementController
     [SerializeField] private float waitTime = 0.8f;
     [SerializeField] private float radius = 7.5f;
     private Node[] path;
-    private bool isBusy;
 
     [SerializeField] private Transform target;
 

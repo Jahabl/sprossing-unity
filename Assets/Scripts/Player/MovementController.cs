@@ -12,6 +12,8 @@ public class MovementController : MonoBehaviour
     [SerializeField] protected SpriteRenderer spriteRenderer;
     public int layer;
 
+    protected bool isBusy;
+
     private bool wasInit;
 
     private void Start()
