@@ -739,7 +739,7 @@ public class WorldManager : MonoBehaviour
                     break;
             }
         }
-        else if (tileLayer > 0)
+        else if (tileLayer >= 3)
         {
             tile = tilemaps[tileLayer - 2].GetTile<SeasonalRuleTile>(tilePosition);
             if (tile != null && tile.tileType == TileType.Cliff)
@@ -747,6 +747,21 @@ public class WorldManager : MonoBehaviour
                 tile = tilemaps[tileLayer - 3].GetTile<SeasonalRuleTile>(tilePosition + Vector3Int.down);
                 if (tile != null && tile.tileType == TileType.Grass)
                 {
+                    tile = tilemaps[tileLayer - 3].GetTile<SeasonalRuleTile>(tilePosition + 2 * Vector3Int.down);
+                    if (tile == null)
+                    {
+                        return false;
+                    }
+
+                    if (tileLayer >= 5)
+                    {
+                        tile = tilemaps[tileLayer - 5].GetTile<SeasonalRuleTile>(tilePosition + 2 * Vector3Int.down);
+                        if (tile != null && tile.tileType == TileType.Ramp)
+                        {
+                            return false;
+                        }
+                    }
+
                     tilemaps[tileLayer - 2].SetTile(tilePosition, allTiles[(int)TileType.Ramp]);
                     tilemaps[tileLayer - 2].SetTile(tilePosition + Vector3Int.down, allTiles[(int)TileType.Ramp]);
 
