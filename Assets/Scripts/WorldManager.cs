@@ -775,8 +775,6 @@ public class WorldManager : MonoBehaviour
                 Node checkNode = nodeGrid.GetNodeFromWorldPosition(position + new Vector3(cellSize.x * x, cellSize.y * y, 0f));
                 if (checkNode == null || (checkNode.gridID != layer && checkNode.gridID % layer != 0))
                 {
-                    Debug.Log(checkNode == null);
-                    Debug.Log(checkNode.gridID != layer);
                     return false;
                 }
             }
@@ -830,6 +828,7 @@ public class WorldManager : MonoBehaviour
         }
 
         bool addBridge = false;
+
         tile = tilemaps[tileLayer + 1].GetTile<SeasonalRuleTile>(tilePosition + direction);
         if (tile != null)
         {
@@ -867,10 +866,15 @@ public class WorldManager : MonoBehaviour
                         {
                             if (tile.tileType == TileType.Bridge)
                             {
-                                return false;
+                                if (x == 0)
+                                {
+                                    return false;
+                                }
                             }
-
-                            endFound++;
+                            else
+                            {
+                                endFound++;
+                            }
                         }
                     }
 
@@ -905,7 +909,7 @@ public class WorldManager : MonoBehaviour
 
                     if (tile == null || tile.tileType != TileType.Bridge)
                     {
-                        return false;
+                        return true;
                     }
 
                     tilemaps[tileLayer].SetTile(tilePosition + new Vector3Int(0, direction.y * i, 0), allTiles[(int)TileType.Cliff]);
@@ -914,10 +918,12 @@ public class WorldManager : MonoBehaviour
                 }
             }
         }
-        else
+        else //left or right
         {
             if (addBridge)
             {
+                bool needsObjectLayer = true;
+
                 int length = 0;
 
                 for (int i = 1; i < 9; i++)
@@ -936,10 +942,19 @@ public class WorldManager : MonoBehaviour
                             {
                                 if (tile.tileType == TileType.Bridge)
                                 {
-                                    return false;
+                                    if (y == 0)
+                                    {
+                                        return false;
+                                    }
+                                    else if (y == -1)
+                                    {
+                                        needsObjectLayer = false;
+                                    }
                                 }
-
-                                endFound++;
+                                else
+                                {
+                                    endFound++;
+                                }
                             }
                         }
                     }
@@ -964,7 +979,12 @@ public class WorldManager : MonoBehaviour
                 {
                     tilemaps[tileLayer].SetTile(tilePosition + new Vector3Int(direction.x * i, 0, 0), allTiles[(int)TileType.Grass]);
                     tilemaps[tileLayer + 1].SetTile(tilePosition + new Vector3Int(direction.x * i, 0, 0), allTiles[(int)TileType.Bridge]);
-                    tilemaps[tileLayer + 2].SetTile(tilePosition + new Vector3Int(direction.x * i, -1, 0), allTiles[(int)TileType.Bridge]);
+                    tilemaps[tileLayer + 2].SetTile(tilePosition + new Vector3Int(direction.x * i, 0, 0), null);
+                    if (needsObjectLayer)
+                    {
+                        tilemaps[tileLayer + 2].SetTile(tilePosition + new Vector3Int(direction.x * i, -1, 0), allTiles[(int)TileType.Bridge]);
+                    }
+
                     nodeGrid.UpdateNodeInGrid(position + new Vector3(direction.x * cellSize.x * i, 0f, 0f), tilePosition + direction * i);
                 }
             } //remove bridge
@@ -976,13 +996,19 @@ public class WorldManager : MonoBehaviour
 
                     if (tile == null || tile.tileType != TileType.Bridge)
                     {
-                        return false;
+                        return true;
                     }
 
                     tilemaps[tileLayer].SetTile(tilePosition + new Vector3Int(direction.x * i, 0, 0), allTiles[(int)TileType.Cliff]);
                     tilemaps[tileLayer + 1].SetTile(tilePosition + new Vector3Int(direction.x * i, 0, 0), allTiles[(int)TileType.Water]);
                     tilemaps[tileLayer + 2].SetTile(tilePosition + new Vector3Int(direction.x * i, -1, 0), null);
                     nodeGrid.UpdateNodeInGrid(position + new Vector3(direction.x * cellSize.x * i, 0f, 0f), tilePosition + direction * i);
+
+                    tile = tilemaps[tileLayer + 1].GetTile<SeasonalRuleTile>(tilePosition + new Vector3Int(direction.x * i, 1, 0));
+                    if (tile != null && tile.tileType == TileType.Bridge)
+                    {
+                        tilemaps[tileLayer + 2].SetTile(tilePosition + new Vector3Int(direction.x * i, 0, 0), allTiles[(int)TileType.Bridge]);
+                    }
                 }
             }
         }
