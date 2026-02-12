@@ -18,7 +18,7 @@ public class Structure : MonoBehaviour
         {
             if (i == childCount - 1)
             {
-                transform.GetChild(i).GetComponent<SpriteRenderer>().sortingOrder = baseLayer + 4;
+                transform.GetChild(i).GetComponent<SpriteRenderer>().sortingOrder = baseLayer + 5;
             }
             else
             {

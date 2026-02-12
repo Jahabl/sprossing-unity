@@ -1129,6 +1129,46 @@ public class WorldManager : MonoBehaviour
         return true;
     }
 
+    public bool PlaceShrub(Vector3 position, int layer)
+    {
+        if ((layer - 1) % 3 != 0) //on ramp
+        {
+            return false;
+        }
+
+        int tileLayer = layer - 7;
+
+        Vector3Int tilePosition = tilemaps[0].WorldToCell(position);
+
+        SeasonalRuleTile tile = tilemaps[tileLayer + 2].GetTile<SeasonalRuleTile>(tilePosition);
+        if (tile != null)
+        {
+            if (tile.tileType == TileType.Shrub) //remove
+            {
+                tilemaps[tileLayer + 2].SetTile(tilePosition, null);
+                nodeGrid.UpdateNodeInGrid(position, tilePosition);
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        //add
+        tile = tilemaps[tileLayer + 1].GetTile<SeasonalRuleTile>(tilePosition);
+        if (tile != null && tile.tileType != TileType.Path)
+        {
+            return false;
+        }
+
+        tilemaps[tileLayer + 2].SetTile(tilePosition, allTiles[(int)TileType.Shrub]);
+        nodeGrid.UpdateNodeInGrid(position, tilePosition);
+
+        return true;
+    }
+
     public Vector3 GetRandomPoint(Vector3 currPosition, float radius)
     {
         Vector2 randomPos = Random.insideUnitCircle * radius + new Vector2(currPosition.x, currPosition.y);

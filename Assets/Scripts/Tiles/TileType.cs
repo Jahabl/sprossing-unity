@@ -11,5 +11,6 @@ public enum TileType
     Waterfall = 5,
     Bridge = 6,
     Fence = 7,
-    Block = 8
+    Block = 8,
+    Shrub = 9
 }
