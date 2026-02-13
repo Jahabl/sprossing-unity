@@ -226,7 +226,7 @@ public class WorldManager : MonoBehaviour
 
         foreach (SavedObject child in saveData.objects)
         {
-            Structure structure = Resources.Load<Structure>($"{child.prefabName}");
+            Structure structure = Resources.Load<Structure>($"Prefabs/{child.prefabName}");
             structure = Instantiate(structure, new Vector3(child.position[0], child.position[1], 0f), Quaternion.identity, objectParent);
             structure.SetLayer(child.layer);
 
@@ -287,33 +287,6 @@ public class WorldManager : MonoBehaviour
         }
 
         return false;
-        /*for (int i = 0; i < objectParent.transform.childCount; i++)
-        {
-            Structure structure = objectParent.GetChild(i).GetComponent<Structure>();
-            Vector3 position = objectParent.GetChild(i).position;
-            Vector3Int tilePosition = tilemaps[0].WorldToCell(position);
-
-            int layer = structure.GetComponent<SpriteRenderer>().sortingOrder;
-
-            if (structure.CompareTag("House"))
-            {
-                for (int y = structure.bottomLeft.y; y < structure.bottomLeft.y + structure.size.y; y++)
-                {
-                    for (int x = structure.bottomLeft.x; x < structure.bottomLeft.x + structure.size.x; x++)
-                    {
-                        tilemaps[layer].SetTile(tilePosition + new Vector3Int(x, y, 0), null);
-                        nodeGrid.UpdateNodeInGrid(position + new Vector3(cellSize.x * x, cellSize.y * y, 0f), tilePosition + new Vector3Int(x, y, 0));
-                    }
-                }
-            }
-            else
-            {
-                tilemaps[layer].SetTile(tilePosition, null);
-                nodeGrid.UpdateNodeInGrid(position, tilePosition);
-            }
-
-            Destroy(structure.gameObject);
-        }*/
     }
 
     public int GetPositionLevel(Vector3 position, int layer, Vector3Int direction)
@@ -802,7 +775,7 @@ public class WorldManager : MonoBehaviour
             return false;
         }
 
-        Structure house = Resources.Load<Structure>("House");
+        Structure house = Resources.Load<Structure>("Prefabs/House");
         house = Instantiate(house, position, Quaternion.identity, objectParent);
         house.SetupStructure(layer - 5, (int)allTiles[(int)TileType.Grass].season);
 
@@ -1117,7 +1090,7 @@ public class WorldManager : MonoBehaviour
             }
         }
 
-        Structure tree = Resources.Load<Structure>("Tree");
+        Structure tree = Resources.Load<Structure>("Prefabs/Tree");
         tree = Instantiate(tree, position, Quaternion.identity, objectParent);
         tree.SetupStructure(layer - 5, (int)allTiles[(int)TileType.Grass].season);
         
