@@ -29,6 +29,6 @@ MonoBehaviour:
     m_Neighbors: 
     m_NeighborPositions: []
     m_RuleTransform: 0
-  tileType: 8
+  tileType: 9
   season: 0
   tilesToConnect: []

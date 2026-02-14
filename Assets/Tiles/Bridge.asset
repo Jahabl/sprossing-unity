@@ -213,8 +213,8 @@ MonoBehaviour:
     m_Neighbors: 
     m_NeighborPositions: []
     m_RuleTransform: 0
-  tileType: 6
-  season: 1
+  tileType: 7
+  season: 0
   tilesToConnect:
   - {fileID: 11400000, guid: 4bc1295ddfcd0430e9732373d2126611, type: 2}
   - {fileID: 11400000, guid: 80f63757680f744b7876df937bc0b17e, type: 2}

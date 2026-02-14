@@ -403,6 +403,11 @@ public class WorldManager : MonoBehaviour
                     tilemaps[tileLayer + 1].SetTile(tilePosition, allTiles[(int)TileType.Cliff]);
                     tilemaps[tileLayer + 3].SetTile(tilePosition + Vector3Int.up, allTiles[(int)TileType.Grass]);
 
+                    if (tileLayer > 2)
+                    {
+                        tilemaps[tileLayer - 1].SetTile(tilePosition + Vector3Int.down, allTiles[(int)TileType.FullCliff]);
+                    }
+
                     nodeGrid.UpdateNodeInGrid(position + new Vector3(0f, cellSize.y, 0f), tilePosition + Vector3Int.up);
                     nodeGrid.UpdateNodeInGrid(position, tilePosition);
 
@@ -424,7 +429,7 @@ public class WorldManager : MonoBehaviour
                                 if (y == 0 || x == 0)
                                 {
                                     tile = tilemaps[tileLayer + 4].GetTile<SeasonalRuleTile>(tilePosition + Vector3Int.up + new Vector3Int(x, y, 0));
-                                    if (tile != null && (tile.tileType == TileType.Water || tile.tileType == TileType.Cliff || tile.tileType == TileType.Waterfall))
+                                    if (tile != null && (tile.tileType == TileType.Water || tile.tileType == TileType.Waterfall))
                                     {
                                         return false;
                                     }
@@ -435,6 +440,11 @@ public class WorldManager : MonoBehaviour
                         tilemaps[tileLayer + 3].SetTile(tilePosition + Vector3Int.up, null);
                         tilemaps[tileLayer + 4].SetTile(tilePosition + Vector3Int.up, null); //remove overlay
                         tilemaps[tileLayer + 1].SetTile(tilePosition, null);
+
+                        if (tileLayer > 2)
+                        {
+                            tilemaps[tileLayer - 1].SetTile(tilePosition + Vector3Int.down, null);
+                        }
 
                         nodeGrid.UpdateNodeInGrid(position + new Vector3(0f, cellSize.y, 0f), tilePosition + Vector3Int.up);
                         nodeGrid.UpdateNodeInGrid(position, tilePosition);
@@ -1152,7 +1162,7 @@ public class WorldManager : MonoBehaviour
             return currPosition;
         }
 
-        return randomNode.worldPosition;
+        return new Vector3(randomNode.worldPosition.x, randomNode.worldPosition.y, currPosition.z);
     }
 
     public void ReturnToMenu()

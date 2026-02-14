@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Pathfinding : MonoBehaviour
@@ -8,18 +9,17 @@ public class Pathfinding : MonoBehaviour
     [SerializeField] private NodeGrid nodes;
     [SerializeField] private PathRequestManager requestManager;
 
-    public void StartFindPath(Vector3 startPosition, int layer, Vector3 targetPosition)
+    public void StartFindPath(Vector3 startPosition, Vector3 targetPosition)
     {
-        StartCoroutine(FindPath(startPosition, layer, targetPosition));
+        StartCoroutine(FindPath(startPosition, targetPosition));
     }
 
-    IEnumerator FindPath(Vector3 startPosition, int layer, Vector3 targetPosition)
+    IEnumerator FindPath(Vector3 startPosition, Vector3 targetPosition)
     {
         Node[] waypoints = new Node[0];
         bool pathWasFound = false;
 
         Node startNode = nodes.GetNodeFromWorldPosition(startPosition);
-        startNode.layer = layer;
         Node targetNode = nodes.GetNodeFromWorldPosition(targetPosition);
 
         if (startPosition == targetPosition || startNode == null || targetNode == null)
@@ -27,6 +27,9 @@ public class Pathfinding : MonoBehaviour
             requestManager.FinishedProcessingPath(waypoints, pathWasFound);
             yield break;
         }
+
+        startNode.layer = Mathf.RoundToInt(startPosition.z);
+        targetNode.layer = Mathf.RoundToInt(targetPosition.z);
 
         Heap<Node> openSet = new Heap<Node>(nodes.MaxSize);
         HashSet<Node> closedSet = new HashSet<Node>();
@@ -38,7 +41,7 @@ public class Pathfinding : MonoBehaviour
             Node currentNode = openSet.RemoveFirst();
             closedSet.Add(currentNode);
 
-            if (currentNode == targetNode) //found path
+            if (currentNode == targetNode) //found path  && currentNode.layer == targetPosition.z
             {
                 pathWasFound = true;
                 break;
@@ -52,6 +55,7 @@ public class Pathfinding : MonoBehaviour
                     continue;
                 }
 
+                neighbor.layer = newLayer;
                 int newCost = currentNode.gCost + GetDistance(currentNode, neighbor) + neighbor.movementPenalty;
 
                 if (newCost < neighbor.gCost || !openSet.Contains(neighbor))
@@ -59,7 +63,6 @@ public class Pathfinding : MonoBehaviour
                     neighbor.gCost = newCost;
                     neighbor.hCost = GetDistance(neighbor, targetNode);
                     neighbor.parent = currentNode;
-                    neighbor.layer = newLayer;
 
                     if (!openSet.Contains(neighbor))
                     {

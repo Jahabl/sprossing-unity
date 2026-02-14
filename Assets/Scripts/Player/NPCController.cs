@@ -16,14 +16,21 @@ public class NPCController : MovementController
         if (!isBusy)
         {
             isBusy = true;
+            Vector3 currPos = new Vector3(transform.position.x, transform.position.y, layer);
 
             if (target == null)
             {
-                PathRequestManager.RequestPath(transform.position, layer, worldManager.GetRandomPoint(transform.position, radius), OnPathFound);
+                PathRequestManager.RequestPath(currPos, worldManager.GetRandomPoint(currPos, radius), OnPathFound);
             }
             else
             {
-                PathRequestManager.RequestPath(transform.position, layer, target.position, OnPathFound);
+                Vector3 targetPos = new Vector3(target.position.x, target.position.y, layer);
+                if (target.TryGetComponent<SpriteRenderer>(out SpriteRenderer spriteRenderer))
+                {
+                    targetPos.z = spriteRenderer.sortingOrder + 5;
+                }
+
+                PathRequestManager.RequestPath(currPos, targetPos, OnPathFound);
             }
         }
     }

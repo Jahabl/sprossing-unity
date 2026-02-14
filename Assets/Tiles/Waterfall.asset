@@ -486,7 +486,7 @@ MonoBehaviour:
     - {x: -1, y: 1, z: 0}
     - {x: 1, y: 1, z: 0}
     m_RuleTransform: 0
-  tileType: 5
+  tileType: 6
   season: 0
   tilesToConnect:
   - {fileID: 11400000, guid: 4bc1295ddfcd0430e9732373d2126611, type: 2}

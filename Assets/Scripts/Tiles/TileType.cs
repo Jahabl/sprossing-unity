@@ -5,12 +5,13 @@ public enum TileType
 {
     Grass = 0,
     Cliff = 1,
-    Water = 2,
-    Path = 3,
-    Ramp = 4,
-    Waterfall = 5,
-    Bridge = 6,
-    Fence = 7,
-    Block = 8,
-    Shrub = 9
+    FullCliff = 2,
+    Water = 3,
+    Path = 4,
+    Ramp = 5,
+    Waterfall = 6,
+    Bridge = 7,
+    Fence = 8,
+    Block = 9,
+    Shrub = 10
 }

@@ -158,8 +158,9 @@ MonoBehaviour:
   layer: 0
   timeToMove: 0.4
   timeToTurn: 0.1
-  waitTime: 1.5
+  waitTime: 5
   radius: 7.5
+  target: {fileID: 0}
 --- !u!114 &1149083288281267939
 MonoBehaviour:
   m_ObjectHideFlags: 0

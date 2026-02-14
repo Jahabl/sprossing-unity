@@ -6,7 +6,7 @@ public class PathRequestManager : MonoBehaviour
 {
     public static PathRequestManager instance;
 
-    private Queue<PathRequest> requestQueue = new Queue<PathRequest>();
+    private readonly Queue<PathRequest> requestQueue = new Queue<PathRequest>();
     private PathRequest currRequest;
     [SerializeField] private Pathfinding pathfinding;
     private bool isProcessing;
@@ -19,22 +19,20 @@ public class PathRequestManager : MonoBehaviour
     struct PathRequest
     {
         public Vector3 pathStart;
-        public int layer;
         public Vector3 pathEnd;
         public Action<Node[], bool> callback;
 
-        public PathRequest(Vector3 pathStart, int layer, Vector3 pathEnd, Action<Node[], bool> callback)
+        public PathRequest(Vector3 pathStart, Vector3 pathEnd, Action<Node[], bool> callback)
         {
             this.pathStart = pathStart;
-            this.layer = layer;
             this.pathEnd = pathEnd;
             this.callback = callback;
         }
     }
 
-    public static void RequestPath(Vector3 pathStart, int layer, Vector3 pathEnd, Action<Node[], bool> callback)
+    public static void RequestPath(Vector3 pathStart, Vector3 pathEnd, Action<Node[], bool> callback)
     {
-        PathRequest newRequest = new PathRequest(pathStart, layer, pathEnd, callback);
+        PathRequest newRequest = new PathRequest(pathStart, pathEnd, callback);
         instance.requestQueue.Enqueue(newRequest);
         instance.TryProcessNext();
     }
@@ -46,7 +44,7 @@ public class PathRequestManager : MonoBehaviour
             currRequest = requestQueue.Dequeue();
             isProcessing = true;
 
-            pathfinding.StartFindPath(currRequest.pathStart, currRequest.layer, currRequest.pathEnd);
+            pathfinding.StartFindPath(currRequest.pathStart, currRequest.pathEnd);
         }
     }
 

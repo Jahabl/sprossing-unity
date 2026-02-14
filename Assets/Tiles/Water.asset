@@ -1034,7 +1034,7 @@ MonoBehaviour:
     - {x: -1, y: 1, z: 0}
     - {x: 1, y: 1, z: 0}
     m_RuleTransform: 0
-  tileType: 2
+  tileType: 3
   season: 0
   tilesToConnect:
   - {fileID: 11400000, guid: 80f63757680f744b7876df937bc0b17e, type: 2}

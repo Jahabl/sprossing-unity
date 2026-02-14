@@ -1899,6 +1899,90 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: ground_0
+      rect:
+        serializedVersion: 2
+        x: 60
+        y: 108
+        width: 15
+        height: 12
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 306470611b0b0456b9b922759be3dc49
+      internalID: -1560619016
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ground_1
+      rect:
+        serializedVersion: 2
+        x: 75
+        y: 108
+        width: 15
+        height: 12
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3dba79b420ae0440794c64446346661c
+      internalID: 864278360
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ground_2
+      rect:
+        serializedVersion: 2
+        x: 90
+        y: 108
+        width: 15
+        height: 12
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ddd2dece93dfc42349f6eb5a4f2f45a6
+      internalID: -546377488
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ground_3
+      rect:
+        serializedVersion: 2
+        x: 105
+        y: 108
+        width: 15
+        height: 12
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c8e2de681de0646798a7ae0f90c37c00
+      internalID: -854763287
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -1910,15 +1994,15 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
+      ground_0: -1136629673
+      ground_1: 1014996484
+      ground_2: -876973696
+      ground_3: -96767222
       seasonalGround_0: 1774268015
       seasonalGround_1: 111724179
       seasonalGround_10: 3867499
       seasonalGround_11: -43931008
       seasonalGround_12: 930541508
-      seasonalGround_13: -1136629673
-      seasonalGround_14: 1014996484
-      seasonalGround_15: -876973696
-      seasonalGround_16: -96767222
       seasonalGround_17: 850882788
       seasonalGround_18: -10752153
       seasonalGround_19: 1692665259

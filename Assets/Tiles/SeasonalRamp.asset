@@ -600,7 +600,7 @@ MonoBehaviour:
     m_Neighbors: 
     m_NeighborPositions: []
     m_RuleTransform: 0
-  tileType: 4
-  season: 1
+  tileType: 5
+  season: 0
   tilesToConnect:
   - {fileID: 11400000, guid: 36a25c31534174598ad5b4f9fc4c72db, type: 2}
