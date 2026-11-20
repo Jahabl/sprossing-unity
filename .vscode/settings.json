@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "sprossing-unity.sln"
+    "dotnet.defaultSolution": "sprossing-unity.slnx"
 }
